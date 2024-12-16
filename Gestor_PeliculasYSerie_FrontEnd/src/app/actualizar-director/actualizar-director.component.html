@@ -1,0 +1,33 @@
+<br>
+<div class="form-container">
+  <form (ngSubmit)="onSubmit()" #empleadoForm="ngForm">
+    <h3>Edición de empleado</h3>
+    <div class="form-group">
+      <label for="name">Nombre: </label>
+      <input
+        type="text"
+        id="name"
+        [(ngModel)]="director.name"
+        name="name"
+        required
+        minlength="4"
+        maxlength="30"
+        placeholder="Digite su nombre"
+        #nombre="ngModel"
+      />
+      <div class="alert alert-danger" *ngIf="nombre.invalid && (nombre.dirty || nombre.touched)">
+        <div *ngIf="nombre.errors?.['required']">
+          Digite su nombre por favor
+        </div>
+        <div *ngIf="nombre.errors?.['minlength']">
+          El nombre tiene que contener como mínimo 4 caracteres
+        </div>
+        <div *ngIf="nombre.errors?.['maxlength']">
+          El nombre tiene que tener como máximo 30 caracteres
+        </div>
+      </div>
+    </div>
+    <br>
+    <button class="action-btn edit-btn" type="submit" [disabled]="!empleadoForm.form.valid">Guardar</button>
+  </form>
+</div>

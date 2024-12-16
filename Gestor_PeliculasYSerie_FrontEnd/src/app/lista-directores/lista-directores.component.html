@@ -1,0 +1,26 @@
+<div class="table-container">
+    <h2>Lista directores</h2>
+    <button (click)="agregarDirector()" class="action-btn add-btn">Agregar</button>
+    <br>
+    <br>
+    <table class="custom-table">
+      <thead>
+        <tr>
+          <th>ID</th>
+          <th>Nombre</th>
+          <th>Acciones</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let director of directores">
+          <td>{{director.id}}</td>
+          <td>{{director.name}}</td>
+          <td>
+            <button (click)="actualizarDirector(director.id)" class="action-btn edit-btn">Editar</button>
+            <button (click)="eliminarDirector(director.id)" class="action-btn delete-btn">Borrar</button>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+  

@@ -1,0 +1,112 @@
+<main>
+    <section class="sectionindex">
+        <img src="assets/imagenes/pulp.jpeg">
+        <img src="assets/imagenes/regreso.jpg">
+        <img src="assets/imagenes/akira.jpg"> 
+        <img src="assets/imagenes/terminator.jpg">
+    </section>
+    <div class="tituloscarrousel">
+        <h1>Proximos estrenos</h1>
+    </div>
+
+    <div class="carousel-container2">
+        <button class="prev-btn" (click)="moveCarousel(-1)">&#10094;</button>
+        <div class="carousel-wrapper2">
+            <div class="carousel2">
+                <div class="carousel-item" *ngFor="let item of carouselItems; let last = last" [ngClass]="{'empty-item': last}">
+                    <img *ngIf="item.img" src="{{item.img}}" alt="{{item.title}}" />
+                    <div class="product-info">
+                        <h3>{{item.title}}</h3>
+                        <p class="carouselRate">⭐{{item.rating}}</p>
+                        <p class="carouseldesc">{{item.description}}</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <button class="next-btn" (click)="moveCarousel(1)">&#10095;</button>
+    </div>
+    
+
+
+    <div class="titulos">
+        <h1>Mis favoritos</h1>
+    </div>
+    <div class="divsproductos">
+        <div class="product">
+            <img src="assets/imagenes/Taxi.jpg" alt="Producto">
+            <!--‘Rorschach’, de Tom King y Jorge Fornés (ECC)-->
+            <div class="overlay">
+                <p class="titleproducto">Pulp fiction</p>
+                <p>⭐8,9/10</p>
+                <p class="descripcion">Las vidas de dos mafiosos, un boxeador,
+                    la esposa de un gánster y un par de bandidos se entrelazan en
+                    cuatro historias de violencia y redención.</p>
+            </div>
+        </div>
+        <div class="product">
+            <img class="blur-in" src="assets/imagenes/pulp.jpeg" alt="Producto">
+            <!--‘Rorschach’, de Tom King y Jorge Fornés (ECC)-->
+            <div class="overlay">
+                <p class="title"></p>
+                <p class="price"></p>
+            </div>
+        </div>
+        <div class="product">
+            <img class="blur-in" src="assets/imagenes/Blade.jpg" alt="Producto">
+            <!--‘Rorschach’, de Tom King y Jorge Fornés (ECC)-->
+            <div class="overlay">
+                <p class="title"></p>
+                <p class="price"></p>
+            </div>
+        </div>
+        <div class="product">
+            <img class="blur-in" src="assets/imagenes/akira.jpg" alt="Producto">
+            <!--‘Rorschach’, de Tom King y Jorge Fornés (ECC)-->
+            <div class="overlay">
+                <p class="title"></p>
+                <p class="price"></p>
+            </div>
+        </div>
+        <div class="product">
+            <img class="blur-in" src="assets/imagenes/logan.jpg" alt="Producto">
+            <!--‘Rorschach’, de Tom King y Jorge Fornés (ECC)-->
+            <div class="overlay">
+                <p class="title"></p>
+                <p class="price"></p>
+            </div>
+        </div>
+        <div class="product">
+            <img class="blur-in" src="assets/imagenes/inter.jpg" alt="Producto">
+            <!--‘Rorschach’, de Tom King y Jorge Fornés (ECC)-->
+            <div class="overlay">
+                <p class="title"></p>
+                <p class="price"></p>
+            </div>
+        </div>
+        <div class="product">
+            <img class="blur-in" src="assets/imagenes/terminator.jpg" alt="Producto">
+            <!--‘Rorschach’, de Tom King y Jorge Fornés (ECC)-->
+            <div class="overlay">
+                <p class="title"></p>
+                <p class="price"></p>
+            </div>
+        </div>
+        <div class="product">
+            <img class="blur-in" src="assets/imagenes/regreso.jpg" alt="Producto">
+            <!--‘Rorschach’, de Tom King y Jorge Fornés (ECC)-->
+            <div class="overlay">
+                <p class="title"></p>
+                <p class="price"></p>
+            </div>
+        </div>
+        <!-- Repite lo mismo para los otros productos -->
+    </div>
+
+    <div class="tituloscarrousel">
+        <h1>Selecciones populares</h1>
+    </div>
+
+</main>
+
+
+
