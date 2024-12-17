@@ -1,7 +1,7 @@
 import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Director } from '../director';
-import { DirectorService } from '../director.service';
+import { DirectorService } from '../../../director.service';
 import { Router, RouterModule, Routes } from '@angular/router';
 
 @Component({

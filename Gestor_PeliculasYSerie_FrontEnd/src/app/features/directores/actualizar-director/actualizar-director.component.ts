@@ -1,6 +1,6 @@
 import { Component } from '@angular/core';
 import { Director } from '../director';
-import { DirectorService } from '../director.service';
+import { DirectorService } from '../../../director.service';
 import { ActivatedRoute, Router } from '@angular/router';
 import { catchError, of, tap } from 'rxjs';
 import Swal from 'sweetalert2';

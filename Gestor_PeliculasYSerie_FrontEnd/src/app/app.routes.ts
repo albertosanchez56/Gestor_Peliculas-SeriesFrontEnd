@@ -1,9 +1,9 @@
 import { RouterModule, Routes } from '@angular/router';
-import { ListaDirectoresComponent } from './lista-directores/lista-directores.component';
+import { ListaDirectoresComponent } from './features/directores/lista-directores/lista-directores.component';
 import { NgModule } from '@angular/core';
-import { RegistrarDirectorComponent } from './registrar-director/registrar-director.component';
-import { ActualizarDirectorComponent } from './actualizar-director/actualizar-director.component';
-import { IndexComponent } from './index/index.component';
+import { RegistrarDirectorComponent } from './features/directores/registrar-director/registrar-director.component';
+import { ActualizarDirectorComponent } from './features/directores/actualizar-director/actualizar-director.component';
+import { IndexComponent } from './features/index/index.component';
 
 export const routes: Routes = [
     {path : 'directores', component:ListaDirectoresComponent},

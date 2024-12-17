@@ -1,4 +1,4 @@
-import { Director } from './director';
+import { Director } from './features/directores/director';
 
 describe('Director', () => {
   it('should create an instance', () => {

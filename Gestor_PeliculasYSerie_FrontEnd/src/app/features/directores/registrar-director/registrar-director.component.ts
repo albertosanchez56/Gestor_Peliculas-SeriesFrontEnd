@@ -1,7 +1,7 @@
 import { Component } from '@angular/core';
 import { Director } from '../director';
 import { FormsModule } from '@angular/forms';
-import { DirectorService } from '../director.service';
+import { DirectorService } from '../../../director.service';
 import { Router } from '@angular/router';
 
 @Component({

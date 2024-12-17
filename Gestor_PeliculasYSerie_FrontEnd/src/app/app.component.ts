@@ -1,6 +1,6 @@
 import { Component } from '@angular/core';
 import { RouterLink, RouterOutlet } from '@angular/router';
-import { ListaDirectoresComponent } from "./lista-directores/lista-directores.component";
+import { ListaDirectoresComponent } from "./features/directores/lista-directores/lista-directores.component";
 import { FormsModule } from '@angular/forms';
 import { HttpClient } from '@angular/common/http';
 import { CommonModule } from '@angular/common';
