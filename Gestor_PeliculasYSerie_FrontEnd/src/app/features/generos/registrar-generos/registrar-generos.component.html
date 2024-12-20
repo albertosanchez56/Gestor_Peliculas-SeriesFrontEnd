@@ -1,0 +1,12 @@
+<br>
+<div class="form-container">
+    <form (ngSubmit)="onSubmit()">     
+      <div class="form-group">
+        <h3>Registro de generos</h3>
+        <label for="name">Nombre: </label>
+        <input type="text" id="name" [(ngModel)]="genero.name" name="name">
+      </div>
+      <button class="action-btn edit-btn" type="submit">Guardar</button>
+    </form>
+</div>
+  

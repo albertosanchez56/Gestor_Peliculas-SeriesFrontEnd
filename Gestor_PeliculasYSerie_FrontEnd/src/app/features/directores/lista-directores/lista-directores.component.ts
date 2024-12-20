@@ -1,7 +1,7 @@
 import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Director } from '../director';
-import { DirectorService } from '../../../director.service';
+import { DirectorService } from '../service/director.service';
 import { Router, RouterModule, Routes } from '@angular/router';
 
 @Component({
@@ -18,7 +18,7 @@ export class ListaDirectoresComponent {
 
   ngOnInit(): void{
     console.log('ListaDirectoresComponent cargado');
-    this.obtenerEmpleados();
+    this.obtenerDirectores();
   }
 
   agregarDirector(){
@@ -32,11 +32,11 @@ export class ListaDirectoresComponent {
   eliminarDirector(id:number){
     this.directorServicio.eliminarDirector(id).subscribe(dato => {
       console.log(dato);
-      this.obtenerEmpleados();
+      this.obtenerDirectores();
     })
   }
 
-  private obtenerEmpleados(){
+  private obtenerDirectores(){
     this.directorServicio.obtenerListaDeDirectores().subscribe(dato =>{
       this.directores = dato;
     })

@@ -1,0 +1,26 @@
+<div class="table-container">
+    <h2>Lista generos</h2>
+    <button (click)="agregarGenero()" class="action-btn add-btn">Agregar</button>
+    <br>
+    <br>
+    <table class="custom-table">
+      <thead>
+        <tr>
+          <th>ID</th>
+          <th>Nombre</th>
+          <th>Acciones</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let genero of generos">
+          <td>{{genero.id}}</td>
+          <td>{{genero.name}}</td>
+          <td>
+            <button (click)="actualizarGenero(genero.id)" class="action-btn edit-btn">Editar</button>
+            <button (click)="eliminarGenero(genero.id)" class="action-btn delete-btn">Borrar</button>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+  
