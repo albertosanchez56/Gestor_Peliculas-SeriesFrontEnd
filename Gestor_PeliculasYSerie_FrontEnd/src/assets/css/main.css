@@ -181,7 +181,7 @@
       margin: auto;
       display: grid;
       grid-template-columns: repeat(auto-fill, 270px);
-      gap: 37px;
+      gap: 20px;
       position: relative;
   }
   .product {

@@ -30,6 +30,8 @@ export class IndexComponent implements OnInit{
   itemsToMove = 5;
   partialVisibleWidth = 165;
   initialMarginLeft = 165;
+  initialMarginLeftHighRes = 230;
+ 
 
   constructor(@Inject(PLATFORM_ID) private platformId: Object) {}
 
@@ -49,9 +51,13 @@ export class IndexComponent implements OnInit{
         this.itemsToMove = 2;
       } else if (screenWidth <= 768) {
         this.itemsToMove = 3;
-      } else {
+      } else if(screenWidth <= 1900){
         this.itemsToMove = 5;
+      }else{
+        this.itemsToMove = 7;
       }
+
+      
     }
   }
 
@@ -101,9 +107,12 @@ export class IndexComponent implements OnInit{
 
         // Ajustar el margen si la pantalla es mayor a 768px
         const screenWidth = window.innerWidth;
-        if (screenWidth >= 768) {
+        if (screenWidth >= 2000) {
+            wrapper.style.marginLeft = this.currentIndex === 0 ? `${this.initialMarginLeftHighRes}px` : '0';
+        } else if (screenWidth >= 768){
             wrapper.style.marginLeft = this.currentIndex === 0 ? `${this.initialMarginLeft}px` : '0';
-        } else {
+        }
+        else {
             wrapper.style.marginLeft = '0';
         }
         console.log('currentIndex',  this.currentIndex);
