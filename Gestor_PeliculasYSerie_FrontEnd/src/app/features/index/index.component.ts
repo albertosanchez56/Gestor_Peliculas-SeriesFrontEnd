@@ -23,13 +23,21 @@ export class IndexComponent implements OnInit{
     { img: 'assets/imagenes/pulp.jpeg', title: 'Taxi Driver', rating: '8,2/10', description: 'Un veterano con problemas de salud mental trabaja como taxista en Nueva York.' },
     { img: 'assets/imagenes/pulp.jpeg', title: 'Taxi Driver', rating: '8,2/10', description: 'Un veterano con problemas de salud mental trabaja como taxista en Nueva York.' },
     { img: 'assets/imagenes/akira.jpg', title: 'Taxi Driver', rating: '8,2/10', description: 'Un veterano con problemas de salud mental trabaja como taxista en Nueva York.' },
+    { img: 'assets/imagenes/akira.jpg', title: 'Taxi Driver', rating: '8,2/10', description: 'Un veterano con problemas de salud mental trabaja como taxista en Nueva York.' },
+    { img: 'assets/imagenes/pulp.jpeg', title: 'Taxi Driver', rating: '8,2/10', description: 'Un veterano con problemas de salud mental trabaja como taxista en Nueva York.' },
+    { img: 'assets/imagenes/pulp.jpeg', title: 'Taxi Driver', rating: '8,2/10', description: 'Un veterano con problemas de salud mental trabaja como taxista en Nueva York.' },
+    { img: 'assets/imagenes/pulp.jpeg', title: 'Taxi Driver', rating: '8,2/10', description: 'Un veterano con problemas de salud mental trabaja como taxista en Nueva York.' },
+    { img: 'assets/imagenes/pulp.jpeg', title: 'Taxi Driver', rating: '8,2/10', description: 'Un veterano con problemas de salud mental trabaja como taxista en Nueva York.' },
+    { img: 'assets/imagenes/pulp.jpeg', title: 'Taxi Driver', rating: '8,2/10', description: 'Un veterano con problemas de salud mental trabaja como taxista en Nueva York.' },
+    
     { img: '', title: '', rating: '', description: '' }
   ];
 
   currentIndex = 0;
   itemsToMove = 5;
   partialVisibleWidth = 165;
-  initialMarginLeft = 165;
+  partialVisibleWidthHighRes = 520;
+  initialMarginLeft = 175;
   initialMarginLeftHighRes = 230;
  
 
@@ -70,7 +78,7 @@ export class IndexComponent implements OnInit{
 
         if (!carousel || !wrapper) return;
 
-        const itemWidth = 306; // Ajusta el valor de itemWidth si es necesario
+        const itemWidth = 290; // Ajusta el valor de itemWidth si es necesario
         const itemsCount = carousel.querySelectorAll('.carousel-item').length;
         console.log('itemsCount:', itemsCount);
         const visibleItems = Math.floor(wrapper.offsetWidth / itemWidth);
@@ -97,16 +105,35 @@ export class IndexComponent implements OnInit{
         if (newIndex > maxIndex) newIndex = maxIndex;
 
         this.currentIndex = newIndex;
-
+        const screenWidth = window.innerWidth;
         // Calcular el desplazamiento
-        let offset = this.currentIndex * itemWidth - this.partialVisibleWidth;
+        /*if (screenWidth >= 2000) {
+          let offset = this.currentIndex * itemWidth - this.partialVisibleWidthHighRes;
+          if (this.currentIndex === 0) offset = 0;
+          carousel.style.transform = `translateX(-${offset}px)`;
+        } else if (screenWidth >= 768){
+          let offset = this.currentIndex * itemWidth - this.partialVisibleWidth;
+          if (this.currentIndex === 0) offset = 0;
+          carousel.style.transform = `translateX(-${offset}px)`;
+        }
+        else {
+          let offset = this.currentIndex * itemWidth - this.partialVisibleWidth;
+          if (this.currentIndex === 0) offset = 0;
+          carousel.style.transform = `translateX(-${offset}px)`;
+        }*/
+        const partialWidth = screenWidth >= 2000 ? this.partialVisibleWidthHighRes : this.partialVisibleWidth;
+        let offset = this.currentIndex * itemWidth - partialWidth;
         if (this.currentIndex === 0) offset = 0;
+        carousel.style.transform = `translateX(-${offset}px)`;
+          
+        //let offset = this.currentIndex * itemWidth - this.partialVisibleWidth;
+        
 
         // Aplicar la transformación para mover el carrusel
-        carousel.style.transform = `translateX(-${offset}px)`;
+        
 
         // Ajustar el margen si la pantalla es mayor a 768px
-        const screenWidth = window.innerWidth;
+        
         if (screenWidth >= 2000) {
             wrapper.style.marginLeft = this.currentIndex === 0 ? `${this.initialMarginLeftHighRes}px` : '0';
         } else if (screenWidth >= 768){

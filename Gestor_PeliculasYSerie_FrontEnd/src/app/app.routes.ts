@@ -18,5 +18,9 @@ export const routes: Routes = [
     {path : 'registrar-genero', component : RegistrarGenerosComponent},
     {path : 'actualizar-genero/:id', component: ActualizarGenerosComponent},
     {path : 'genero-detalles/:id', component: ActualizarGenerosComponent},
+    {path : 'peliculas', component:ListaGenerosComponent},
+    {path : 'registrar-pelicula', component : RegistrarGenerosComponent},
+    {path : 'actualizar-pelicula/:id', component: ActualizarGenerosComponent},
+    {path : 'pelicula-detalles/:id', component: ActualizarGenerosComponent},
     {path : 'Home', component: IndexComponent}
 ];
