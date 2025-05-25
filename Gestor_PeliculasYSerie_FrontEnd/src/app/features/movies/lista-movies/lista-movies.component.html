@@ -1,1 +1,33 @@
-<p>lista-movies works!</p>
+<div class="table-container">
+    <h2>Lista Peliculas</h2>
+    <button (click)="agregarPelicula()" class="action-btn add-btn">Agregar</button>
+    <br>
+    <br>
+    <table class="custom-table">
+      <thead>
+        <tr>
+          <th>ID</th>
+          <th>Titulo</th>
+          <th>Descripción</th>
+          <th>Fecha de estreno</th>
+          <th>Director</th>
+          <th>Generos</th>
+          <th>Acciones</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let pelicula of movies">
+          <td>{{pelicula.id}}</td>
+          <td>{{pelicula.title}}</td>
+          <td>{{pelicula.description}}</td>
+          <td>{{pelicula.releaseDate}}</td>
+          <td>{{pelicula.director.name}}</td>
+          <td>{{pelicula.genres}}</td>
+          <td>
+            <button (click)="actualizarPelicula(pelicula.id)" class="action-btn edit-btn">Editar</button>
+            <button (click)="eliminarPelicula(pelicula.id)" class="action-btn delete-btn">Borrar</button>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>

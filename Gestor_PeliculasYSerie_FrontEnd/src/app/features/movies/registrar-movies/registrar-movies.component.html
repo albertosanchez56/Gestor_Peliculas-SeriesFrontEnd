@@ -1,1 +1,30 @@
-<p>registrar-movies works!</p>
+<br>
+<div class="form-container">
+    <form (ngSubmit)="onSubmit()">     
+        <div class="form-group">
+            <h3>Registro de Películas</h3>
+            
+            <label for="title">Título: </label>
+            <input type="text" id="title" [(ngModel)]="movie.title" name="title" required>
+      
+            <label for="description">Descripción: </label>
+            <textarea id="description" [(ngModel)]="movie.description" name="description" required></textarea>
+      
+            <label for="releaseDate">Fecha de lanzamiento: </label>
+            <input type="date" id="releaseDate" [(ngModel)]="movie.releaseDate" name="releaseDate" required>
+      
+            <label for="director">Director: </label>
+            <select id="director" [(ngModel)]="movie.director" name="director" required>
+              <option *ngFor="let director of directores" [ngValue]="director">{{ director.name }}</option>
+            </select>
+      
+            <label for="genres">Géneros: </label>
+            <select id="genres" [(ngModel)]="movie.genres" name="genres" multiple required>
+              <option *ngFor="let genre of generos" [value]="genre">{{ genre.name }}</option>
+            </select>
+            
+          </div>
+      <button class="action-btn edit-btn" type="submit">Guardar</button>
+    </form>
+</div>
+  

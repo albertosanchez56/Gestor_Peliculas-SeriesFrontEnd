@@ -7,6 +7,9 @@ import { IndexComponent } from './features/index/index.component';
 import { ListaGenerosComponent } from './features/generos/lista-generos/lista-generos.component';
 import { RegistrarGenerosComponent } from './features/generos/registrar-generos/registrar-generos.component';
 import { ActualizarGenerosComponent } from './features/generos/actualizar-generos/actualizar-generos.component';
+import { ListaMoviesComponent } from './features/movies/lista-movies/lista-movies.component';
+import { RegistrarMoviesComponent } from './features/movies/registrar-movies/registrar-movies.component';
+import { ActualizarMoviesComponent } from './features/movies/actualizar-movies/actualizar-movies.component';
 
 export const routes: Routes = [
     {path : 'directores', component:ListaDirectoresComponent},
@@ -18,9 +21,9 @@ export const routes: Routes = [
     {path : 'registrar-genero', component : RegistrarGenerosComponent},
     {path : 'actualizar-genero/:id', component: ActualizarGenerosComponent},
     {path : 'genero-detalles/:id', component: ActualizarGenerosComponent},
-    {path : 'peliculas', component:ListaGenerosComponent},
-    {path : 'registrar-pelicula', component : RegistrarGenerosComponent},
-    {path : 'actualizar-pelicula/:id', component: ActualizarGenerosComponent},
-    {path : 'pelicula-detalles/:id', component: ActualizarGenerosComponent},
+    {path : 'peliculas', component:ListaMoviesComponent},
+    {path : 'registrar-pelicula', component : RegistrarMoviesComponent},
+    {path : 'actualizar-pelicula/:id', component: ActualizarMoviesComponent},
+    {path : 'pelicula-detalles/:id', component: ActualizarMoviesComponent},
     {path : 'Home', component: IndexComponent}
 ];

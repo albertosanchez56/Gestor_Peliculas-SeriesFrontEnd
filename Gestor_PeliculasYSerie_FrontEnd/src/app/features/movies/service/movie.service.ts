@@ -2,6 +2,7 @@ import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import { Movies } from '../movies';
+import { MovieRequest } from '../MovieRequest';
 
 
 @Injectable({
@@ -17,7 +18,7 @@ export class MovieService {
      return this.httpClient.get<Movies[]>(`${this.baseUrl}/mostrarpeliculas`);
    }
  
-   registrarPelicula(movie:Movies):Observable<Movies>{
+   registrarPelicula(movie:MovieRequest):Observable<Movies>{
      return this.httpClient.post<Movies>(`${this.baseUrl}/guardarpeliculas`, movie);
    }
  
