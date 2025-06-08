@@ -15,7 +15,7 @@ export class ListaMoviesComponent {
 
   
     movies:Movies[];
-    director:Director[];
+    
   
     constructor(private movieServicio: MovieService, private router:Router){}
   

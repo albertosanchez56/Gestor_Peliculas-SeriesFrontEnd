@@ -1,33 +1,42 @@
 <div class="table-container">
-    <h2>Lista Peliculas</h2>
-    <button (click)="agregarPelicula()" class="action-btn add-btn">Agregar</button>
-    <br>
-    <br>
-    <table class="custom-table">
-      <thead>
-        <tr>
-          <th>ID</th>
-          <th>Titulo</th>
-          <th>Descripción</th>
-          <th>Fecha de estreno</th>
-          <th>Director</th>
-          <th>Generos</th>
-          <th>Acciones</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr *ngFor="let pelicula of movies">
-          <td>{{pelicula.id}}</td>
-          <td>{{pelicula.title}}</td>
-          <td>{{pelicula.description}}</td>
-          <td>{{pelicula.releaseDate}}</td>
-          <td>{{pelicula.director.name}}</td>
-          <td>{{pelicula.genres}}</td>
-          <td>
-            <button (click)="actualizarPelicula(pelicula.id)" class="action-btn edit-btn">Editar</button>
-            <button (click)="eliminarPelicula(pelicula.id)" class="action-btn delete-btn">Borrar</button>
-          </td>
-        </tr>
-      </tbody>
-    </table>
-  </div>
+  <h2>Lista Peliculas</h2>
+  <button (click)="agregarPelicula()" class="action-btn add-btn">Agregar</button>
+  <br />
+  <br />
+  <table class="custom-table">
+    <thead>
+      <tr>
+        <th>ID</th>
+        <th>Título</th>
+        <th>Descripción</th>
+        <th>Fecha de estreno</th>
+        <th>Director</th>
+        <th>Géneros</th>
+        <th>Acciones</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let pelicula of movies">
+        <td>{{ pelicula.id }}</td>
+        <td>{{ pelicula.title }}</td>
+        <td>{{ pelicula.description }}</td>
+        <td>{{ pelicula.releaseDate | date:'yyyy-MM-dd' }}</td>
+        <td>{{ pelicula.director?.name || '— Sin director —' }}</td>
+        <td>
+          <ng-container *ngIf="pelicula.genres?.length; else noGenres">
+            <ng-container *ngFor="let g of pelicula.genres; let i = index">
+              {{ g.name }}<span *ngIf="i < pelicula.genres.length - 1">, </span>
+            </ng-container>
+          </ng-container>
+          <ng-template #noGenres>
+            — Sin géneros —
+          </ng-template>
+        </td>
+        <td>
+          <button (click)="actualizarPelicula(pelicula.id)" class="action-btn edit-btn">Editar</button>
+          <button (click)="eliminarPelicula(pelicula.id)" class="action-btn delete-btn">Borrar</button>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+</div>
