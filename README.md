@@ -40,13 +40,20 @@ El proyecto está en desarrollo:
 
 ## 📂 Cómo ejecutar el frontend
 1. Clonar este repositorio:
+
    ```bash
-   git clone https://github.com/tu-usuario/NombreRepoFrontend
+   git clone https://github.com/albertosanchez56/Gestor_Peliculas-Series/tree/main?tab=readme-ov-file
+
 2. Instalar dependencias:
+
     npm install
+
 3. Ejecutar el servidor de desarrollo:
+
     ng serve
+
 4. Abrir en el navegador:
+
     http://localhost:4200/
 
 
