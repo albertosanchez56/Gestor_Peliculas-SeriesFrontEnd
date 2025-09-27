@@ -8,7 +8,7 @@ import { Director } from '../director';
 })
 export class DirectorService {
 
-  private baseUrl = "http://localhost:9090/peliculas";
+  private baseUrl = "http://localhost:9090/directores";
 
   constructor(private httpClient : HttpClient) { }
 

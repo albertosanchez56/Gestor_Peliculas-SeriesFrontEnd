@@ -8,7 +8,7 @@ import { Generos } from '../generos';
 })
 export class GeneroService {
 
-  private baseUrl = "http://localhost:9090/peliculas";
+  private baseUrl = "http://localhost:9090/generos";
   
     constructor(private httpClient : HttpClient) { }
 

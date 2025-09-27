@@ -63,6 +63,18 @@ form button:hover {
     border-radius: 4px;
     font-size: 14px;
   }
+
+  /* registrar-movies.component.css */
+.error {
+  color: #c0392b;
+  font-size: .85rem;
+  margin-top: 4px;
+  display: block;
+}
+input.ng-invalid.ng-touched, select.ng-invalid.ng-touched, textarea.ng-invalid.ng-touched {
+  border-color: #c0392b;
+}
+
   
   
   

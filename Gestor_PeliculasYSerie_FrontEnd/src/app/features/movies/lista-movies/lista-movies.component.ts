@@ -14,10 +14,12 @@ import { Director } from '../../directores/director';
 export class ListaMoviesComponent {
 
   
-    movies:Movies[];
+    movies:Movies[] = [];
     
   
     constructor(private movieServicio: MovieService, private router:Router){}
+
+    
   
     ngOnInit(): void{
       console.log('ListaPeliculasComponent cargado');

@@ -1,8 +1,9 @@
 <div class="table-container">
-  <h2>Lista Peliculas</h2>
+  <h2>Lista Películas</h2>
   <button (click)="agregarPelicula()" class="action-btn add-btn">Agregar</button>
   <br />
   <br />
+
   <table class="custom-table">
     <thead>
       <tr>
@@ -12,29 +13,70 @@
         <th>Fecha de estreno</th>
         <th>Director</th>
         <th>Géneros</th>
+        <th>Duración</th>
+        <th>Idioma</th>
+        <th>Clasif.</th>
+        <th>Rating</th>
+        <th>Póster</th>
+        <th>Backdrop</th>
+        <th>Tráiler</th>
         <th>Acciones</th>
       </tr>
     </thead>
+
     <tbody>
       <tr *ngFor="let pelicula of movies">
         <td>{{ pelicula.id }}</td>
         <td>{{ pelicula.title }}</td>
-        <td>{{ pelicula.description }}</td>
+
+        <!-- (opcional) recortar un poco la descripción -->
+        <td>
+          {{ pelicula.description }}
+        </td>
+
         <td>{{ pelicula.releaseDate | date:'yyyy-MM-dd' }}</td>
         <td>{{ pelicula.director?.name || '— Sin director —' }}</td>
+
         <td>
           <ng-container *ngIf="pelicula.genres?.length; else noGenres">
             <ng-container *ngFor="let g of pelicula.genres; let i = index">
               {{ g.name }}<span *ngIf="i < pelicula.genres.length - 1">, </span>
             </ng-container>
           </ng-container>
-          <ng-template #noGenres>
-            — Sin géneros —
-          </ng-template>
+          <ng-template #noGenres>— Sin géneros —</ng-template>
         </td>
+
+        <td>{{ pelicula.durationMinutes ?? '—' }}</td>
+        <td>{{ pelicula.originalLanguage || '—' }}</td>
+        <td>{{ pelicula.ageRating || '—' }}</td>
+        <td>{{ (pelicula.averageRating ?? '—') }}</td>
+
         <td>
-          <button (click)="actualizarPelicula(pelicula.id)" class="action-btn edit-btn">Editar</button>
-          <button (click)="eliminarPelicula(pelicula.id)" class="action-btn delete-btn">Borrar</button>
+          <ng-container *ngIf="pelicula.posterUrl; else noPoster">
+            <img #poster [src]="pelicula.posterUrl" [alt]="'Póster ' + (pelicula.title || '')" width="48" height="72"
+              (error)="poster.style.display='none'">
+          </ng-container>
+          <ng-template #noPoster>—</ng-template>
+        </td>
+
+        <td>
+          <ng-container *ngIf="pelicula.backdropUrl; else noBackdrop">
+            <img #backdrop [src]="pelicula.backdropUrl" [alt]="'Backdrop ' + (pelicula.title || '')" width="80"
+              height="45" (error)="backdrop.style.display='none'">
+          </ng-container>
+          <ng-template #noBackdrop>—</ng-template>
+        </td>
+
+        <td>
+          <a *ngIf="pelicula.trailerUrl; else noTrailer" [href]="pelicula.trailerUrl" target="_blank"
+            rel="noopener noreferrer">Ver</a>
+          <ng-template #noTrailer>—</ng-template>
+        </td>
+
+        <td>
+          <!-- si tu TS aún se queja por id opcional, usa pelicula.id! -->
+          <button (click)="actualizarPelicula(pelicula.id!)" class="action-btn edit-btn">Editar</button>
+          <button (click)="eliminarPelicula(pelicula.id!)" class="action-btn delete-btn">Borrar</button>
         </td>
       </tr>
     </tbody>
