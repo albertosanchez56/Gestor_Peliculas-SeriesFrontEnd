@@ -10,6 +10,7 @@ import { ActualizarGenerosComponent } from './features/generos/actualizar-genero
 import { ListaMoviesComponent } from './features/movies/lista-movies/lista-movies.component';
 import { RegistrarMoviesComponent } from './features/movies/registrar-movies/registrar-movies.component';
 import { ActualizarMoviesComponent } from './features/movies/actualizar-movies/actualizar-movies.component';
+import { TmdbImportComponent } from './features/movies/tmdb-import/tmdb-import.component';
 
 export const routes: Routes = [
     {path : 'directores', component:ListaDirectoresComponent},
@@ -25,5 +26,6 @@ export const routes: Routes = [
     {path : 'registrar-pelicula', component : RegistrarMoviesComponent},
     {path : 'actualizar-pelicula/:id', component: ActualizarMoviesComponent},
     {path : 'pelicula-detalles/:id', component: ActualizarMoviesComponent},
+    {path: 'tmdb-import', component: TmdbImportComponent },
     {path : 'Home', component: IndexComponent}
 ];

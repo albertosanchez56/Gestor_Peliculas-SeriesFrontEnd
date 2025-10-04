@@ -4,10 +4,11 @@ import { MovieService } from '../service/movie.service';
 import { Router, RouterModule, Routes } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { Director } from '../../directores/director';
+import { RouterLink, RouterLinkActive } from '@angular/router';
 
 @Component({
   selector: 'app-lista-movies',
-  imports: [CommonModule],
+  imports: [CommonModule, RouterLink, RouterLinkActive],
   templateUrl: './lista-movies.component.html',
   styleUrl: './lista-movies.component.css'
 })

@@ -1,0 +1,32 @@
+<div class="card">
+    <h2>Importar desde TMDB</h2>
+
+    <div class="box">
+        <h3>Importar populares</h3>
+        <label>Páginas (1-10):</label>
+        <input type="number" [(ngModel)]="pages" min="1" max="10">
+        <button (click)="doImportPopular()" [disabled]="loading">Importar</button>
+
+        <div *ngIf="summary" class="result">
+            <p><strong>Importadas:</strong> {{ (summary.created || 0) + (summary.updated || 0) }}</p>
+            <p><strong>Fallidas:</strong> {{ summary.skipped || 0 }}</p>
+            <div *ngIf="summary.errors?.length">
+                <small>Errores:<br> {{ summary.errors.join(' | ') }}</small>
+            </div>
+        </div>
+
+    </div>
+
+
+
+    <hr>
+
+    <div class="box">
+        <h3>Importar por TMDB ID</h3>
+        <input type="number" [(ngModel)]="tmdbId" placeholder="Ej: 550">
+        <button (click)="doImportById()" [disabled]="loading || !tmdbId">Importar</button>
+        <div *ngIf="oneImportMsg" class="result">{{ oneImportMsg }}</div>
+    </div>
+
+    <div *ngIf="error" class="error">{{ error }}</div>
+</div>

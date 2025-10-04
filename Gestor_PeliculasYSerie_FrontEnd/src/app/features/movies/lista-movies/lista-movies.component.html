@@ -2,6 +2,9 @@
   <h2>Lista Películas</h2>
   <button (click)="agregarPelicula()" class="action-btn add-btn">Agregar</button>
   <br />
+  <button class="action-btn add-btn" [routerLink]="['/tmdb-import']">
+  Importar desde TMDB
+  </button>
   <br />
 
   <table class="custom-table">
@@ -29,7 +32,7 @@
         <td>{{ pelicula.id }}</td>
         <td>{{ pelicula.title }}</td>
 
-        <!-- (opcional) recortar un poco la descripción -->
+        
         <td>
           {{ pelicula.description }}
         </td>
@@ -74,7 +77,7 @@
         </td>
 
         <td>
-          <!-- si tu TS aún se queja por id opcional, usa pelicula.id! -->
+          
           <button (click)="actualizarPelicula(pelicula.id!)" class="action-btn edit-btn">Editar</button>
           <button (click)="eliminarPelicula(pelicula.id!)" class="action-btn delete-btn">Borrar</button>
         </td>
