@@ -1,1 +1,138 @@
-<p>actualizar-movies works!</p>
+<!-- editar-movies.component.html -->
+<div class="form-container">
+  <form #f="ngForm" (ngSubmit)="onSubmit()">
+    <div class="form-group">
+      <h3>Editar Película</h3>
+
+      <div class="error" *ngIf="apiErrors?.['_global']">
+        {{ apiErrors?.['_global'] }}
+      </div>
+
+      <!-- TÍTULO -->
+      <label for="title">Título: </label>
+      <input id="title" type="text"
+             [(ngModel)]="movie.title" name="title"
+             required maxlength="255" #titleModel="ngModel">
+      <small class="error"
+             *ngIf="titleModel.invalid && (titleModel.dirty || titleModel.touched)">
+        El título es obligatorio (máx. 255).
+      </small>
+      <small class="error" *ngIf="apiErrors?.['title']">{{ apiErrors?.['title'] }}</small>
+
+      <!-- DESCRIPCIÓN -->
+      <label for="description">Descripción: </label>
+      <textarea id="description"
+                [(ngModel)]="movie.description" name="description"
+                maxlength="1000" #descModel="ngModel"></textarea>
+      <small class="error" *ngIf="descModel.errors?.['maxlength']">Máximo 1000 caracteres.</small>
+      <small class="error" *ngIf="apiErrors?.['description']">{{ apiErrors?.['description'] }}</small>
+
+      <!-- FECHA -->
+      <label for="releaseDate">Fecha de lanzamiento: </label>
+      <input id="releaseDate" type="date"
+             [(ngModel)]="movie.releaseDate" name="releaseDate"
+             required [max]="today" #dateModel="ngModel">
+      <small class="error" *ngIf="dateModel.errors?.['max']">No puede ser una fecha futura.</small>
+      <small class="error" *ngIf="apiErrors?.['releaseDate']">{{ apiErrors?.['releaseDate'] }}</small>
+
+      <!-- DIRECTOR -->
+      <label for="director">Director: </label>
+      <select id="director"
+              [(ngModel)]="movie.director" name="director"
+              required #directorModel="ngModel">
+        <option [ngValue]="undefined">-- Selecciona --</option>
+        <option *ngFor="let director of directores" [ngValue]="director">{{ director.name }}</option>
+      </select>
+      <small class="error"
+             *ngIf="directorModel.invalid && (directorModel.dirty || directorModel.touched)">
+        Debes seleccionar un director.
+      </small>
+      <small class="error" *ngIf="apiErrors?.['directorId']">{{ apiErrors?.['directorId'] }}</small>
+
+      <!-- GÉNEROS -->
+      <label for="genres">Géneros: </label>
+      <select id="genres"
+              [(ngModel)]="movie.genres" name="genres"
+              multiple required #genresModel="ngModel">
+        <option *ngFor="let genre of generos" [ngValue]="genre">{{ genre.name }}</option>
+      </select>
+      <small class="error"
+             *ngIf="genresModel.invalid && (genresModel.dirty || genresModel.touched)">
+        Selecciona al menos un género.
+      </small>
+      <small class="error" *ngIf="apiErrors?.['genreIds']">{{ apiErrors?.['genreIds'] }}</small>
+
+      <!-- DURACIÓN -->
+      <label for="durationMinutes">Duración (min):</label>
+      <input id="durationMinutes" type="number"
+             [(ngModel)]="movie.durationMinutes" name="durationMinutes"
+             min="1" max="600" step="1" #durModel="ngModel">
+      <small class="error" *ngIf="durModel.errors?.['min']">Mínimo 1 minuto.</small>
+      <small class="error" *ngIf="durModel.errors?.['max']">Máximo 600 minutos.</small>
+      <small class="error" *ngIf="apiErrors?.['durationMinutes']">{{ apiErrors?.['durationMinutes'] }}</small>
+
+      <!-- IDIOMA -->
+      <label for="originalLanguage">Idioma original:</label>
+      <input id="originalLanguage" type="text"
+             [(ngModel)]="movie.originalLanguage" name="originalLanguage"
+             placeholder="es, en, fr..." maxlength="10"
+             pattern="^[a-zA-Z]{2}$" #langModel="ngModel">
+      <small class="error" *ngIf="langModel.errors?.['pattern']">
+        Debe tener 2 letras (ISO-639-1).
+      </small>
+      <small class="error" *ngIf="apiErrors?.['originalLanguage']">{{ apiErrors?.['originalLanguage'] }}</small>
+
+      <!-- URLS -->
+      <label for="posterUrl">URL póster:</label>
+      <input id="posterUrl" type="url"
+             [(ngModel)]="movie.posterUrl" name="posterUrl"
+             placeholder="https://..." #posterModel="ngModel">
+      <small class="error"
+             *ngIf="posterModel.invalid && (posterModel.dirty || posterModel.touched)">
+        URL inválida.
+      </small>
+      <small class="error" *ngIf="apiErrors?.['posterUrl']">{{ apiErrors?.['posterUrl'] }}</small>
+
+      <label for="backdropUrl">URL backdrop:</label>
+      <input id="backdropUrl" type="url"
+             [(ngModel)]="movie.backdropUrl" name="backdropUrl"
+             placeholder="https://..." #backdropModel="ngModel">
+      <small class="error"
+             *ngIf="backdropModel.invalid && (backdropModel.dirty || backdropModel.touched)">
+        URL inválida.
+      </small>
+      <small class="error" *ngIf="apiErrors?.['backdropUrl']">{{ apiErrors?.['backdropUrl'] }}</small>
+
+      <label for="trailerUrl">URL tráiler (YouTube, etc.):</label>
+      <input id="trailerUrl" type="url"
+             [(ngModel)]="movie.trailerUrl" name="trailerUrl"
+             placeholder="https://..." #trailerModel="ngModel">
+      <small class="error"
+             *ngIf="trailerModel.invalid && (trailerModel.dirty || trailerModel.touched)">
+        URL inválida.
+      </small>
+      <small class="error" *ngIf="apiErrors?.['trailerUrl']">{{ apiErrors?.['trailerUrl'] }}</small>
+
+      <!-- CLASIFICACIÓN -->
+      <label for="ageRating">Clasificación:</label>
+      <select id="ageRating"
+              [(ngModel)]="movie.ageRating" name="ageRating" #ageModel="ngModel">
+        <option [ngValue]="undefined">-- Selecciona --</option>
+        <option value="TP">TP</option>
+        <option value="7">7</option>
+        <option value="12">12</option>
+        <option value="16">16</option>
+        <option value="18">18</option>
+        <option value="PG">PG</option>
+        <option value="PG-13">PG-13</option>
+        <option value="R">R</option>
+      </select>
+      <small class="error" *ngIf="apiErrors?.['ageRating']">{{ apiErrors?.['ageRating'] }}</small>
+
+    </div>
+
+    <button class="action-btn edit-btn" type="submit" [disabled]="submitting || loading">
+      Actualizar
+    </button>
+  </form>
+</div>

@@ -2,9 +2,11 @@
   <h2>Lista Películas</h2>
   <button (click)="agregarPelicula()" class="action-btn add-btn">Agregar</button>
   <br />
+  <br />
   <button class="action-btn add-btn" [routerLink]="['/tmdb-import']">
   Importar desde TMDB
   </button>
+  <br />
   <br />
 
   <table class="custom-table">
@@ -84,4 +86,10 @@
       </tr>
     </tbody>
   </table>
+  <div class="load-more">
+  <button (click)="loadMore()" [disabled]="loading || noMore">
+    {{ noMore ? 'No hay más' : (loading ? 'Cargando...' : 'Cargar más') }}
+  </button>
+</div>
+  
 </div>
