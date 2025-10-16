@@ -1,59 +1,72 @@
 <main>
-    <section class="sectionindex">
-        <img src="assets/imagenes/pulp.jpeg">
-        <img src="assets/imagenes/regreso.jpg">
-        <img src="assets/imagenes/akira.jpg">
-        <img src="assets/imagenes/terminator.jpg">
-    </section>
-    <div class="tituloscarrousel">
-        <h1>Mejor valoradas</h1>
-    </div>
+  <!-- Hero / cabecera visual -->
+  <section class="sectionindex">
+    <img src="assets/imagenes/pulp.jpeg">
+    <img src="assets/imagenes/regreso.jpg">
+    <img src="assets/imagenes/akira.jpg">
+    <img src="assets/imagenes/terminator.jpg">
+  </section>
 
-    <div class="carousel-container2">
-  <button class="prev-btn" (click)="moveCarousel(-1)">&#10094;</button>
+  <!-- CARRUSELES (uno por entrada en this.carousels) -->
+ <!-- CARRUSELES (uno por entrada en this.carousels) -->
+<ng-container *ngFor="let c of carousels; let i = index">
+  <div class="tituloscarrousel">
+    <h1>{{ c.title || 'Carrusel' }}</h1>
+  </div>
 
-  <div class="carousel-wrapper2">
-    <div class="carousel2">
-      <div class="carousel-item" *ngFor="let item of carouselItems; let last = last"
-           [ngClass]="{'empty-item': last}">
-        <!-- REUTILIZAMOS LAS MISMAS CLASES DEL GRID -->
-        <div class="product">
-          <img class="blur-in"
-               [src]="item.img || 'assets/imagenes/placeholder-poster.png'"
-               [alt]="item.title" />
-          <div class="overlay">
-            <p class="titleproducto">{{ item.title }}</p>
-            <p class="rating">⭐{{ item.rating }}</p>
-            <p class="descripcion">{{ item.description }}</p>
+  <div class="carousel-container2">
+    <button class="prev-btn"
+            (click)="moveCarouselFor(i, -1)"
+            [disabled]="!showPrev[i]"
+            [class.hidden]="!showPrev[i]">
+      &#10094;
+    </button>
+
+    <div class="carousel-wrapper2"
+         [style.marginLeft.px]="currentIndex[i] === 0 ? leftPaddingPx : 0">
+      <div class="carousel2">
+        <div class="carousel-item"
+             *ngFor="let item of c.items; let last = last"
+             [ngClass]="{'empty-item': last}">
+          <div class="product">
+            <img class="blur-in"
+                 [src]="item.img || 'assets/imagenes/placeholder-poster.png'"
+                 [alt]="item.title" />
+            <div class="overlay">
+              <p class="titleproducto">{{ item.title }}</p>
+              <p class="rating">⭐{{ item.rating }}</p>
+              <p class="descripcion">{{ item.description }}</p>
+            </div>
           </div>
         </div>
       </div>
     </div>
+
+    <button class="next-btn"
+            (click)="moveCarouselFor(i, 1)"
+            [disabled]="!showNext[i]"
+            [class.hidden]="!showNext[i]">
+      &#10095;
+    </button>
+  </div>
+</ng-container>
+
+
+  <!-- GRID “Mis favoritos” -->
+  <div class="titulos">
+    <h1>Mis favoritos</h1>
   </div>
 
-  <button class="next-btn" (click)="moveCarousel(1)">&#10095;</button>
-</div>
-
-
-
-
-    <div class="titulos">
-        <h1>Mis favoritos</h1>
+  <div class="divsproductos">
+    <div class="product" *ngFor="let m of homeMovies">
+      <img class="blur-in"
+           [src]="m.posterUrl || 'assets/imagenes/placeholder-poster.png'"
+           [alt]="m.title" />
+      <div class="overlay">
+        <p class="titleproducto">{{ m.title }}</p>
+        <p class="rating">⭐ {{ m.averageRating ?? '—' }}</p>
+        <p class="descripcion">{{ m.description || 'Sin descripción.' }}</p>
+      </div>
     </div>
-
-    <div class="divsproductos">
-        <div class="product" *ngFor="let m of homeMovies">
-            <img class="blur-in" [src]="m.posterUrl || 'assets/imagenes/placeholder-poster.png'" [alt]="m.title" />
-            <div class="overlay">
-                <p class="titleproducto">{{ m.title }}</p>
-                <p class="rating">⭐ {{ m.averageRating ?? '—' }}</p>
-                <p class="descripcion">{{ m.description || 'Sin descripción.' }}</p>
-            </div>
-        </div>
-    </div>
-
-    <div class="tituloscarrousel">
-        <h1>Selecciones populares</h1>
-    </div>
-
+  </div>
 </main>

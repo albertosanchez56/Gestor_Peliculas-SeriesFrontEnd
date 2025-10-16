@@ -8,208 +8,223 @@ type CarouselItem = {
   title: string;
   rating: string | number;
   description: string;
-  _empty?: boolean; // marcar el hueco vacío (opcional)
+ 
 };
 
+type CarouselData = {
+  title: string;
+  items: CarouselItem[];
+};
 
 @Component({
   selector: 'app-index',
+  standalone: true,
   imports: [CommonModule],
   templateUrl: './index.component.html',
   styleUrl: './index.component.css'
 })
 export class IndexComponent implements OnInit {
 
-
+  // GRID “Mis favoritos”
   homeMovies: Movies[] = [];
 
-  page = 0;
-  size = 20;
+  // Carousels (ej: [Mejor valoradas, Selecciones populares])
+  carousels: CarouselData[] = [];
+
+  // Estado por carrusel (por índice)
+  currentIndex: number[] = [];
+  maxIndex: number[] = [];
+  showPrev: boolean[] = [];
+  showNext: boolean[] = [];
+
+  // Ajustes de layout/animación
+  itemsToMove = 5;
+  readonly itemWidth = 290;                 // ancho lógico por item (pares con CSS)
+  readonly partialVisibleWidth = 165;       // cuánto “asoma” el primer item
+  readonly partialVisibleWidthHighRes = 520;
+  readonly initialMarginLeft = 175;         // padding inicial a la izquierda
+  readonly initialMarginLeftHighRes = 230;
+
+  // Usado por el template: [style.margin-left.px]="currentIndex[i] === 0 ? leftPaddingPx : 0"
+  leftPaddingPx = 175;
+
   loading = false;
 
-  carouselItems: CarouselItem[] = [];
+  constructor(
+    @Inject(PLATFORM_ID) private platformId: Object,
+    private moviesSvc: MovieService
+  ) {}
 
-  currentIndex = 0;
-  itemsToMove = 5;
-  partialVisibleWidth = 165;
-  partialVisibleWidthHighRes = 520;
-  initialMarginLeft = 175;
-  initialMarginLeftHighRes = 230;
-
-
-  constructor(@Inject(PLATFORM_ID) private platformId: Object, private moviesSvc: MovieService) { }
-
-  ngOnInit() {
+  ngOnInit(): void {
     if (isPlatformBrowser(this.platformId)) {
-      // Solo se ejecutará en el navegador
       this.updateItemsToMove();
-      this.toggleNavButtons(1);
+      this.computeLeftPadding();
     }
-    this.cargarTopRatedParaCarrusel();
-    this.cargarPeliculasGrid();
+
+    // Carga de datos
+    this.cargarTopRatedParaCarrusel(); // “Mejor valoradas”
+    this.cargarPopularesParaCarrusel(); // “Selecciones populares” (o cualquier lista que quieras)
+    this.cargarPeliculasGrid(); // Grid “Mis favoritos”
   }
 
-  updateItemsToMove(): void {
-    if (isPlatformBrowser(this.platformId)) {
-      // Solo se ejecutará en el navegador
-      const screenWidth = window.innerWidth;
-      if (screenWidth <= 480) {
-        this.itemsToMove = 2;
-      } else if (screenWidth <= 768) {
-        this.itemsToMove = 3;
-      } else if (screenWidth <= 1900) {
-        this.itemsToMove = 5;
-      } else {
-        this.itemsToMove = 7;
-      }
+  /** --------- Carga de datos ---------- */
 
-
-    }
-  }
-
-  private cargarTopRatedParaCarrusel() {
+  private cargarTopRatedParaCarrusel(): void {
     this.loading = true;
     this.moviesSvc.getTopRated(19).subscribe({
       next: (movies) => {
-        const items = movies.map(m => ({
-          // preferimos poster; si no, backdrop; si no, vacío
+        const items = movies.slice(0, 19).map(m => ({
           img: m.posterUrl || m.backdropUrl || '',
           title: m.title ?? '',
-          rating: (typeof m.averageRating === 'number')
-                    ? m.averageRating.toFixed(1) + '/10'
-                    : '—',
+          rating: (typeof m.averageRating === 'number') ? (m.averageRating.toFixed(1) + '/10') : '—',
           description: m.description ?? ''
         }));
+        // Añadimos 1 vacío para tu truco de layout del carrusel
+        items.push({ img: '', title: '', rating: '', description: ''});
 
-        // exactamente 19 y añadimos 1 vacío al final
-        this.carouselItems = items.slice(0, 19);
-        this.carouselItems.push({ img: '', title: '', rating: '', description: '' });
+        this.upsertCarousel(0,'Mejor valoradas', items); // carrusel 0
       },
       error: () => {},
-      complete: () => this.loading = false
+      complete: () => (this.loading = false)
     });
   }
 
-  private cargarPeliculasGrid() {
-    // lo que ya tenías para “Mis favoritos”
+  private cargarPopularesParaCarrusel(): void {
+    // De ejemplo: usa getAll(0, 19). Cambia por tu endpoint de “populares” si lo tienes.
+    this.moviesSvc.getAll(0, 19).subscribe({
+      next: (movies) => {
+        const items = movies.slice(0, 19).map(m => ({
+          img: m.posterUrl || m.backdropUrl || '',
+          title: m.title ?? '',
+          rating: (typeof m.averageRating === 'number') ? (m.averageRating.toFixed(1) + '/10') : '—',
+          description: m.description ?? ''
+        }));
+        items.push({ img: '', title: '', rating: '', description: ''});
+
+        this.upsertCarousel(1,'Selecciones populares', items); // carrusel 1
+      }
+    });
+  }
+
+  private cargarPeliculasGrid(): void {
     this.moviesSvc.getAll(0, 20).subscribe({
       next: movies => this.homeMovies = movies.slice(0, 14)
     });
   }
 
-  moveCarousel(direction: number): void {
-    if (isPlatformBrowser(this.platformId)) {
-      console.log('Moving carousel', direction); // Para depurar
+  /** Inserta/actualiza el carrusel i y asegura que el estado existe */
+  private upsertCarousel(i: number,title: string, items: CarouselItem[]): void {
+    // Asegura índice
+    while (this.carousels.length <= i) {
+      this.carousels.push({ title,items: [] });
+    }
+    this.carousels[i].items = items;
 
-      const carousel = document.querySelector('.carousel2') as HTMLElement;
-      const wrapper = document.querySelector('.carousel-wrapper2') as HTMLElement;
+    // Inicializa estado si no existe
+    while (this.currentIndex.length <= i) this.currentIndex.push(0);
+    while (this.maxIndex.length <= i) this.maxIndex.push(0);
+    while (this.showPrev.length <= i) this.showPrev.push(false);
+    while (this.showNext.length <= i) this.showNext.push(true);
 
-      if (!carousel || !wrapper) return;
+    // Recalcula límites y aplica transform
+    setTimeout(() => {
+      this.recomputeMaxIndex(i);
+      this.updateNav(i);
+      this.applyTransform(i);
+    });
+  }
 
-      const itemWidth = 290; // Ajusta el valor de itemWidth si es necesario
-      const itemsCount = carousel.querySelectorAll('.carousel-item').length;
-      console.log('itemsCount:', itemsCount);
-      const visibleItems = Math.floor(wrapper.offsetWidth / itemWidth);
-      console.log('visibleItems:', visibleItems);
-      console.log('itemsToMove:', this.itemsToMove);
+  /** --------- Navegación/transform --------- */
 
-      // Cálculo actualizado para maxIndex
-      //const maxIndex = Math.max(0, Math.ceil((itemsCount - visibleItems) / this.itemsToMove) * this.itemsToMove);
-      const maxIndex = itemsCount - visibleItems;
+  moveCarouselFor(i: number, dir: number): void {
+    if (!isPlatformBrowser(this.platformId)) return;
 
-      console.log('maxIndex', maxIndex);
+    let next = this.currentIndex[i] + dir * this.itemsToMove;
+    if (next < 0) next = 0;
+    if (next > this.maxIndex[i]) next = this.maxIndex[i];
 
-      // Actualizar currentIndex según la dirección
-      let newIndex = this.currentIndex + direction * this.itemsToMove;
+    this.currentIndex[i] = next;
+    this.applyTransform(i);
+    this.updateNav(i);
+  }
 
-      // Validar elementos restantes si nos acercamos al final
-      const itemsRemaining = itemsCount - newIndex - visibleItems;
-      if (itemsRemaining < 0 && itemsCount > visibleItems) {
-        newIndex = itemsCount - visibleItems; // Mueve justo para mostrar los últimos ítems visibles
-      }
+  private recomputeMaxIndex(i: number): void {
+    if (!isPlatformBrowser(this.platformId)) return;
 
-      // Controlar los límites del carrusel
-      if (newIndex < 0) newIndex = 0;
-      if (newIndex > maxIndex) newIndex = maxIndex;
+    const wrappers = Array.from(document.querySelectorAll('.carousel-wrapper2')) as HTMLElement[];
+    const wrapper = wrappers[i];
+    if (!wrapper) return;
 
-      this.currentIndex = newIndex;
-      const screenWidth = window.innerWidth;
-      // Calcular el desplazamiento
-      /*if (screenWidth >= 2000) {
-        let offset = this.currentIndex * itemWidth - this.partialVisibleWidthHighRes;
-        if (this.currentIndex === 0) offset = 0;
-        carousel.style.transform = `translateX(-${offset}px)`;
-      } else if (screenWidth >= 768){
-        let offset = this.currentIndex * itemWidth - this.partialVisibleWidth;
-        if (this.currentIndex === 0) offset = 0;
-        carousel.style.transform = `translateX(-${offset}px)`;
-      }
-      else {
-        let offset = this.currentIndex * itemWidth - this.partialVisibleWidth;
-        if (this.currentIndex === 0) offset = 0;
-        carousel.style.transform = `translateX(-${offset}px)`;
-      }*/
-      const partialWidth = screenWidth >= 2000 ? this.partialVisibleWidthHighRes : this.partialVisibleWidth;
-      let offset = this.currentIndex * itemWidth - partialWidth;
-      if (this.currentIndex === 0) offset = 0;
-      carousel.style.transform = `translateX(-${offset}px)`;
+    const itemsCount = this.carousels[i]?.items?.length ?? 0;
+    const visible = Math.max(1, Math.floor(wrapper.offsetWidth / this.itemWidth));
+    this.maxIndex[i] = Math.max(0, itemsCount - visible);
 
-      //let offset = this.currentIndex * itemWidth - this.partialVisibleWidth;
-
-
-      // Aplicar la transformación para mover el carrusel
-
-
-      // Ajustar el margen si la pantalla es mayor a 768px
-
-      if (screenWidth >= 2000) {
-        wrapper.style.marginLeft = this.currentIndex === 0 ? `${this.initialMarginLeftHighRes}px` : '0';
-      } else if (screenWidth >= 768) {
-        wrapper.style.marginLeft = this.currentIndex === 0 ? `${this.initialMarginLeft}px` : '0';
-      }
-      else {
-        wrapper.style.marginLeft = '0';
-      }
-      console.log('currentIndex', this.currentIndex);
-      // Llamar a toggleNavButtons para controlar la visibilidad de los botones
-      this.toggleNavButtons(maxIndex);
+    if (this.currentIndex[i] > this.maxIndex[i]) {
+      this.currentIndex[i] = this.maxIndex[i];
     }
   }
 
+  private applyTransform(i: number): void {
+    if (!isPlatformBrowser(this.platformId)) return;
 
+    const tracks = Array.from(document.querySelectorAll('.carousel2')) as HTMLElement[];
+    const track = tracks[i];
+    if (!track) return;
 
+    const screenWidth = window.innerWidth;
+    const partialWidth = screenWidth >= 2000 ? this.partialVisibleWidthHighRes : this.partialVisibleWidth;
 
+    let offset = this.currentIndex[i] * this.itemWidth - partialWidth;
+    if (this.currentIndex[i] === 0) offset = 0;
 
-  toggleNavButtons(maxIndex: number): void {
-    if (isPlatformBrowser(this.platformId)) {
-      const prevBtn = document.querySelector('.prev-btn') as HTMLElement;
-      const nextBtn = document.querySelector('.next-btn') as HTMLElement;
+    track.style.transform = `translateX(-${offset}px)`;
+    // OJO: el margen izquierdo del wrapper lo maneja el template con [style.margin-left.px]
+    // usando leftPaddingPx. Así evitamos pisarnos con el binding.
+  }
 
-      if (!prevBtn || !nextBtn) return;
+  private updateNav(i: number): void {
+    this.showPrev[i] = this.currentIndex[i] > 0;
+    this.showNext[i] = this.currentIndex[i] < this.maxIndex[i];
+  }
 
-      // Mostrar u ocultar el botón "prev"
-      if (this.currentIndex === 0) {
-        prevBtn.style.display = 'none';
-      } else {
-        prevBtn.style.display = 'block';
-      }
+  /** --------- Responsivo --------- */
 
-      // Mostrar u ocultar el botón "next"
-      if (this.currentIndex >= maxIndex) {
-        nextBtn.style.display = 'none'; // Oculta el botón si estamos en el último set de ítems
-      } else {
-        nextBtn.style.display = 'block'; // Muestra el botón si hay más ítems por mostrar
-      }
+  private updateItemsToMove(): void {
+    if (!isPlatformBrowser(this.platformId)) return;
+
+    const screenWidth = window.innerWidth;
+    if (screenWidth <= 480) {
+      this.itemsToMove = 2;
+    } else if (screenWidth <= 768) {
+      this.itemsToMove = 3;
+    } else if (screenWidth <= 1900) {
+      this.itemsToMove = 5;
+    } else {
+      this.itemsToMove = 7;
     }
   }
 
+  private computeLeftPadding(): void {
+    if (!isPlatformBrowser(this.platformId)) return;
 
+    const screenWidth = window.innerWidth;
+    this.leftPaddingPx = (screenWidth >= 2000)
+      ? this.initialMarginLeftHighRes
+      : (screenWidth >= 768 ? this.initialMarginLeft : 0);
+  }
 
-  @HostListener('window:resize', ['$event'])
+  @HostListener('window:resize')
   onResize(): void {
-    if (isPlatformBrowser(this.platformId)) {
-      // Solo se ejecutará en el navegador
-      this.updateItemsToMove();
+    if (!isPlatformBrowser(this.platformId)) return;
+
+    this.updateItemsToMove();
+    this.computeLeftPadding();
+
+    // Recalcular cada carrusel
+    for (let i = 0; i < this.carousels.length; i++) {
+      this.recomputeMaxIndex(i);
+      this.applyTransform(i);
+      this.updateNav(i);
     }
   }
 }
