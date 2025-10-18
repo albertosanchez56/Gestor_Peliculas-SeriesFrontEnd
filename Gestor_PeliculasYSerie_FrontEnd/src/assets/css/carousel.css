@@ -27,7 +27,9 @@
     position: relative;
     overflow: hidden;
 }
-.prev-btn.hidden, .next-btn.hidden { visibility: hidden; }
+.hidden {
+  display: none !important;
+}
 
 .carousel-item.empty-item {
     background: transparent;  /* No tiene fondo */

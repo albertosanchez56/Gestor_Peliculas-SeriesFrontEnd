@@ -1,0 +1,27 @@
+<div class="tituloscarrousel" *ngIf="title">
+  <h1>{{ title }}</h1>
+</div>
+
+<div class="carousel-container2">
+  <button class="prev-btn" (click)="move(-1)" [class.hidden]="!showPrev">&#10094;</button>
+
+  <div #wrapper class="carousel-wrapper2"
+       [style.margin-left.px]="currentIndex === 0 ? leftPadding : 0">
+    <div #track class="carousel2">
+      <div class="carousel-item" *ngFor="let it of items">
+        <div class="product" (click)="itemClick.emit(it)">
+          <img class="blur-in"
+               [src]="it.img || 'assets/imagenes/placeholder-poster.png'"
+               [alt]="it.title" />
+          <div class="overlay">
+            <p class="titleproducto">{{ it.title }}</p>
+            <p class="rating" *ngIf="it.rating">⭐{{ it.rating }}</p>
+            <p class="descripcion">{{ it.description }}</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <button class="next-btn" (click)="move(1)" [class.hidden]="!showNext">&#10095;</button>
+</div>

@@ -7,49 +7,13 @@
     <img src="assets/imagenes/terminator.jpg">
   </section>
 
-  <!-- CARRUSELES (uno por entrada en this.carousels) -->
- <!-- CARRUSELES (uno por entrada en this.carousels) -->
-<ng-container *ngFor="let c of carousels; let i = index">
-  <div class="tituloscarrousel">
-    <h1>{{ c.title || 'Carrusel' }}</h1>
-  </div>
-
-  <div class="carousel-container2">
-    <button class="prev-btn"
-            (click)="moveCarouselFor(i, -1)"
-            [disabled]="!showPrev[i]"
-            [class.hidden]="!showPrev[i]">
-      &#10094;
-    </button>
-
-    <div class="carousel-wrapper2"
-         [style.marginLeft.px]="currentIndex[i] === 0 ? leftPaddingPx : 0">
-      <div class="carousel2">
-        <div class="carousel-item"
-             *ngFor="let item of c.items; let last = last"
-             [ngClass]="{'empty-item': last}">
-          <div class="product">
-            <img class="blur-in"
-                 [src]="item.img || 'assets/imagenes/placeholder-poster.png'"
-                 [alt]="item.title" />
-            <div class="overlay">
-              <p class="titleproducto">{{ item.title }}</p>
-              <p class="rating">⭐{{ item.rating }}</p>
-              <p class="descripcion">{{ item.description }}</p>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <button class="next-btn"
-            (click)="moveCarouselFor(i, 1)"
-            [disabled]="!showNext[i]"
-            [class.hidden]="!showNext[i]">
-      &#10095;
-    </button>
-  </div>
-</ng-container>
+  <!-- Carrusel 1: Mejor valoradas -->
+ <app-carousel
+    [title]="'Mejor valoradas'"
+    [items]="topRatedItems"
+    [steps]="steps"
+    [leftPadding]="leftPaddingPx">
+  </app-carousel>
 
 
   <!-- GRID “Mis favoritos” -->
@@ -69,4 +33,13 @@
       </div>
     </div>
   </div>
+
+  <!-- Carrusel 2: Selecciones populares -->
+  <app-carousel
+    [title]="'Selecciones populares'"
+    [items]="popularItems"
+    [steps]="steps"
+    [leftPadding]="leftPaddingPx">
+  </app-carousel>
+
 </main>
