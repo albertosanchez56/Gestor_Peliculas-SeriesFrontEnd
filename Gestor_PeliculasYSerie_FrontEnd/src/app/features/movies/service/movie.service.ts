@@ -4,6 +4,13 @@ import { Observable } from 'rxjs';
 import { Movies } from '../movies';
 import { MovieRequest } from '../MovieRequest';
 
+export interface CastCredit {
+  id: number;
+  personName: string;
+  characterName?: string;
+  profileUrl?: string;
+  orderIndex?: number;
+}
 
 @Injectable({
   providedIn: 'root'
@@ -49,4 +56,12 @@ export class MovieService {
   getTopRated(limit = 19): Observable<Movies[]> {
   return this.httpClient.get<Movies[]>(`${this.baseUrl}/top-rated?limit=${limit}`);
 }
+
+getById(id: number): Observable<Movies> {
+    return this.httpClient.get<Movies>(`${this.baseUrl}/peliculas/${id}`);
+  }
+
+  getCast(movieId: number): Observable<CastCredit[]> {
+    return this.httpClient.get<CastCredit[]>(`${this.baseUrl}/movies/${movieId}/cast`);
+  }
 }

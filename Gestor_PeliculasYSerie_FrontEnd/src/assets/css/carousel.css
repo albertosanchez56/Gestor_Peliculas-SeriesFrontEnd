@@ -128,3 +128,5 @@
         min-width: 150px; /* Aún más pequeño para dispositivos móviles */
     }
 }
+
+.product { cursor: pointer; }

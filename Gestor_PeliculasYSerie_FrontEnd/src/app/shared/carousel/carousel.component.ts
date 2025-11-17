@@ -10,6 +10,7 @@ export type CarouselItem = {
   title: string;
   rating: string | number;
   description: string;
+  movieId?: number;
 };
 
 @Component({

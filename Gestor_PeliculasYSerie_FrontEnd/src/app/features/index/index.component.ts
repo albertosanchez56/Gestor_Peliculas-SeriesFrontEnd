@@ -1,15 +1,15 @@
 import { CommonModule, isPlatformBrowser } from '@angular/common';
-import { Component, OnInit, HostListener, Inject, PLATFORM_ID } from '@angular/core';
+import { Component, Inject, PLATFORM_ID, HostListener } from '@angular/core';
 import { Movies } from '../movies/movies';
 import { MovieService } from '../movies/service/movie.service';
-import { CarouselComponent, CarouselItem } from "../../shared/carousel/carousel.component";
-
+import { CarouselItem, CarouselComponent } from '../../shared/carousel/carousel.component';
+import { Router, RouterModule } from '@angular/router';
 
 
 @Component({
   selector: 'app-index',
   standalone: true,
-  imports: [CommonModule, CarouselComponent],
+  imports: [CommonModule, CarouselComponent,RouterModule],
   templateUrl: './index.component.html',
   styleUrl: './index.component.css'
 })
@@ -28,7 +28,7 @@ export class IndexComponent {
 
   constructor(
     @Inject(PLATFORM_ID) private platformId: Object,
-    private moviesSvc: MovieService
+    private moviesSvc: MovieService,private router: Router
   ) {
     // padding inicial según ancho
     this.computeLeftPadding();
@@ -39,6 +39,10 @@ export class IndexComponent {
     this.cargarPeliculasGrid();
   }
 
+  onCarouselItem(it: CarouselItem): void {
+  if (it.movieId != null) this.router.navigate(['/movies', it.movieId]);
+}
+
   private cargarTopRatedParaCarrusel(): void {
     this.moviesSvc.getTopRated(19).subscribe({
       next: movies => {
@@ -48,7 +52,8 @@ export class IndexComponent {
           img: m.posterUrl || m.backdropUrl || '',
           title: m.title ?? '',
           rating: (typeof m.averageRating === 'number') ? (m.averageRating.toFixed(1) + '/10') : '—',
-          description: m.description ?? ''
+          description: m.description ?? '',
+          movieId: m.id
         }));
       }
     });
@@ -61,7 +66,8 @@ export class IndexComponent {
           img: m.posterUrl || m.backdropUrl || '',
           title: m.title ?? '',
           rating: (typeof m.averageRating === 'number') ? (m.averageRating.toFixed(1) + '/10') : '—',
-          description: m.description ?? ''
+          description: m.description ?? '',
+          movieId: m.id
         }));
       }
     });

@@ -1,0 +1,68 @@
+<main>
+  <div class="movie-details-container" *ngIf="movie as mv; else loadingTpl">
+    <header class="movie-header">
+      <h1 class="movie-title">{{ mv.title }}</h1>
+      <span class="movie-rating">{{ ratingText }}</span>
+    </header>
+
+    <div class="movie-main-grid">
+      <!-- Columna de Imagen de Portada -->
+      <div class="movie-poster">
+        <img [src]="mv.posterUrl || 'assets/imagenes/placeholder-poster.png'"
+             [alt]="'Póster de ' + mv.title">
+        <button class="favorite-button" (click)="onToggleFavorite()">+</button>
+      </div>
+
+      <!-- Columna de Detalles de la Película -->
+      <div class="movie-info">
+        <p *ngIf="mv.genres?.length"><strong>Género:</strong> {{ genreList }}</p>
+        <hr *ngIf="mv.genres?.length">
+
+        <p *ngIf="mv.description"><strong>Sinopsis:</strong> {{ mv.description }}</p>
+        <p *ngIf="!mv.description"><strong>Sinopsis:</strong> No disponible.</p>
+        <hr>
+
+        <p *ngIf="mv.director?.name">
+  <strong>Director:</strong> {{ mv.director?.name }}
+</p>
+        <hr>
+
+        <!-- Elenco (top cast) -->
+        <div *ngIf="cast.length">
+          <p><strong>Elenco principal:</strong></p>
+          <div class="cast-grid">
+            <div class="cast-card" *ngFor="let c of cast">
+              <img [src]="c.profileUrl || 'assets/imagenes/placeholder-profile.png'"
+                   [alt]="c.personName">
+              <div class="cast-meta">
+                <div class="cast-name">{{ c.personName }}</div>
+                <div class="cast-role" *ngIf="c.characterName">{{ c.characterName }}</div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <hr *ngIf="cast.length">
+
+        <!-- Trailer (si lo tienes) -->
+        <div *ngIf="mv.trailerUrl">
+          <p><strong>Tráiler:</strong></p>
+          <a [href]="mv.trailerUrl" target="_blank" rel="noopener">Ver en YouTube</a>
+        </div>
+      </div>
+    </div>
+
+    <hr>
+
+    <!-- Sección de Opiniones de Usuarios (placeholder por ahora) -->
+    <section class="user-reviews">
+      <h2>Opiniones de Usuarios</h2>
+      <p>Próximamente…</p>
+    </section>
+  </div>
+
+  <ng-template #loadingTpl>
+    <div class="movie-details-container">
+      Cargando…
+    </div>
+  </ng-template>
+</main>

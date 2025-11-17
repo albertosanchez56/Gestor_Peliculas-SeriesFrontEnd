@@ -9,11 +9,12 @@
 
   <!-- Carrusel 1: Mejor valoradas -->
  <app-carousel
-    [title]="'Mejor valoradas'"
-    [items]="topRatedItems"
-    [steps]="steps"
-    [leftPadding]="leftPaddingPx">
-  </app-carousel>
+  [title]="'Mejor valoradas'"
+  [items]="topRatedItems"
+  [steps]="steps"
+  [leftPadding]="leftPaddingPx"
+  (itemClick)="onCarouselItem($event)">
+</app-carousel>
 
 
   <!-- GRID “Mis favoritos” -->
@@ -22,24 +23,26 @@
   </div>
 
   <div class="divsproductos">
-    <div class="product" *ngFor="let m of homeMovies">
-      <img class="blur-in"
-           [src]="m.posterUrl || 'assets/imagenes/placeholder-poster.png'"
-           [alt]="m.title" />
-      <div class="overlay">
-        <p class="titleproducto">{{ m.title }}</p>
-        <p class="rating">⭐ {{ m.averageRating ?? '—' }}</p>
-        <p class="descripcion">{{ m.description || 'Sin descripción.' }}</p>
-      </div>
+  <a class="product"
+     *ngFor="let m of homeMovies"
+     [routerLink]="['/movies', m.id]">
+    <img class="blur-in" [src]="m.posterUrl || 'assets/imagenes/placeholder-poster.png'" [alt]="m.title" />
+    <div class="overlay">
+      <p class="titleproducto">{{ m.title }}</p>
+      <p class="rating">⭐ {{ m.averageRating ?? '—' }}</p>
+      <p class="descripcion">{{ m.description || 'Sin descripción.' }}</p>
     </div>
-  </div>
+  </a>
+</div>
+
 
   <!-- Carrusel 2: Selecciones populares -->
   <app-carousel
     [title]="'Selecciones populares'"
     [items]="popularItems"
     [steps]="steps"
-    [leftPadding]="leftPaddingPx">
+    [leftPadding]="leftPaddingPx"
+    (itemClick)="onCarouselItem($event)">
   </app-carousel>
 
 </main>
