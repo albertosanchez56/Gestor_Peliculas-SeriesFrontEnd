@@ -1,0 +1,232 @@
+/* ===== BASE ===== */
+.movie-details-container {
+    position: relative;
+  z-index: 2;
+  max-width: 1200px;
+  margin: 0 auto;
+  margin-top: -40px; /* solapa bajo el degradado del hero */
+  padding: 20px;
+  background-color: #303030;
+  border-radius: 12px;
+  box-shadow:
+    -10px 0px 15px -5px rgb(0, 0, 0),
+     10px 0px 15px -5px rgb(0, 0, 0);
+}
+
+.movie-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: end;
+  gap: 12px;
+  margin-bottom: 10px;
+}
+
+.movie-title {
+  font-size: 2.2rem;
+  margin: 0;
+  color: #FFA500;
+  line-height: 1.1;
+}
+
+.movie-rating {
+  font-size: 1.1rem;
+  color: #FFA500;
+}
+
+.movie-info-block p { margin: 10px 0; line-height: 1.5; }
+p { color: white; margin: 0; }
+
+hr {
+  border: none;
+  height: 2px;
+  background-color: #555;
+  margin: 16px 0;
+}
+
+/* ===== HERO (backdrop con degradado) ===== */
+.backdrop-hero {
+  position: relative;
+  isolation: isolate;
+  width: 100%;
+  height: clamp(600px, 38vh, 460px);
+  overflow: hidden;           /* recorta imagen/gradiente */
+  border-radius: 6px;
+  margin-bottom: 16px;
+}
+
+/* imagen grande con mejor calidad */
+.backdrop-img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;          /* llena sin deformar */
+  object-position: center;
+  display: block;
+  filter: none;
+  z-index: 0;              /* capa más baja */
+  pointer-events: none;    /* que no bloquee clicks */
+}
+
+/* degradado inferior que funde al fondo #303030 */
+.backdrop-fade {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    to bottom,
+    rgba(0,0,0,0) 55%,
+    rgba(24,24,24,0.92) 85%,
+    #181818 100%
+  );
+  pointer-events: none;
+  z-index: 0;              /* capa más baja */
+  pointer-events: none;    /* que no bloquee clicks */
+}
+
+
+/* contenido por encima (póster + tráiler) */
+.hero-content {
+  position: relative;
+  z-index: 1;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 24px 20px 80px; /* espacio para que el degradado cubra bien */
+  display: grid;
+  grid-template-columns: 310px 1fr; /* poster + trailer */
+  gap: 24px;
+}
+
+/* póster */
+.hero-poster {
+  position: relative;
+  width: 100%;
+  max-width: 310px;
+}
+.hero-poster img {
+  width: 100%;
+  height: auto;
+  border-radius: 10px;
+  display: block;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.45);
+}
+
+/* botón favorito sobre el póster */
+.favorite-button {
+  position: absolute;
+  top: 6px;
+  right: 6px;
+  background-color: rgba(0,0,0,0.7);
+  color: white;
+  border: none;
+  padding: 6px 10px;
+  border-radius: 6px;
+  font-size: 1.4rem;
+  cursor: pointer;
+  transition: background-color .2s ease;
+}
+.favorite-button:hover { background-color: darkorange; }
+
+/* tráiler */
+.hero-trailer { align-self: end; }
+
+/* contenedor 16:9 */
+.video-frame {
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  background: #111;
+  border-radius: 10px;
+  overflow: hidden;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.35);
+}
+.video-frame iframe {
+  width: 100%;
+  height: 100%;
+  display: block;
+  border: 0;
+}
+
+/* si no hay tráiler */
+.no-trailer {
+  display: grid;
+  place-items: center;
+  min-height: 200px;
+  color: #ddd;
+  background: rgba(0,0,0,0.25);
+  border-radius: 10px;
+}
+
+/* ===== CAST ===== */
+.cast-section { margin-top: 16px; }
+.cast-title { color: #fff; margin-bottom: 10px; }
+
+.cast-grid {
+  display: grid;
+  gap: 14px;
+  grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+}
+
+.cast-card {
+  background: #2a2a2a;
+  border-radius: 10px;
+  padding: 10px;
+  display: grid;
+  grid-template-rows: auto auto;
+  gap: 8px;
+  align-items: start;
+}
+
+.cast-thumb {
+  width: 100%;
+  aspect-ratio: 2 / 3;
+  background: #111;
+  border-radius: 8px;
+  overflow: hidden;
+}
+.cast-thumb img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.cast-meta { color: #ddd; font-size: .95rem; }
+.cast-name { font-weight: 600; color: #fff; }
+.cast-role { color: #bbb; font-size: .9rem; }
+
+.cast-toggle { margin-top: 10px; text-align: center; }
+.toggle-btn {
+  background: #444;
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  padding: 8px 14px;
+  cursor: pointer;
+}
+.toggle-btn:hover { background: #555; }
+
+/* ===== RESPONSIVE ===== */
+@media (max-width: 1024px) {
+  .hero-content {
+    grid-template-columns: 240px 1fr;
+    gap: 18px;
+  }
+  .movie-title { font-size: 2rem; }
+}
+
+@media (max-width: 768px) {
+  .hero-content {
+    grid-template-columns: 1fr;   /* apila poster y trailer */
+    padding-bottom: 60px;
+  }
+  .hero-poster { max-width: 280px; }
+  .movie-header {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+  .movie-title { font-size: 1.8rem; }
+  .movie-rating { font-size: 1rem; }
+  .movie-details-container { margin-top: -24px; }
+}
+
+@media (max-width: 480px) {
+  .cast-grid { grid-template-columns: repeat(2, 1fr); }
+}

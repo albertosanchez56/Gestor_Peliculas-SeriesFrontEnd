@@ -26,10 +26,10 @@ export class MovieService {
   }
 
   getAll(page = 0, size = 20) {
-  return this.httpClient.get<Movies[]>(`${this.baseUrl}/mostrarpeliculas`, {
-    params: { page, size }
-  });
-}
+    return this.httpClient.get<Movies[]>(`${this.baseUrl}/mostrarpeliculas`, {
+      params: { page, size }
+    });
+  }
 
   registrarPelicula(movie: MovieRequest): Observable<Movies> {
     return this.httpClient.post<Movies>(`${this.baseUrl}/guardarpeliculas`, movie);
@@ -54,14 +54,19 @@ export class MovieService {
   }
 
   getTopRated(limit = 19): Observable<Movies[]> {
-  return this.httpClient.get<Movies[]>(`${this.baseUrl}/top-rated?limit=${limit}`);
-}
+    return this.httpClient.get<Movies[]>(`${this.baseUrl}/top-rated?limit=${limit}`);
+  }
 
-getById(id: number): Observable<Movies> {
+  getById(id: number): Observable<Movies> {
     return this.httpClient.get<Movies>(`${this.baseUrl}/peliculas/${id}`);
   }
 
-  getCast(movieId: number): Observable<CastCredit[]> {
-    return this.httpClient.get<CastCredit[]>(`${this.baseUrl}/movies/${movieId}/cast`);
+  getCast(id: number): Observable<CastCredit[]> {
+    return this.httpClient.get<CastCredit[]>(`${this.baseUrl}/cast/${id}`);
   }
+
+  importCast(id: number, tmdbId: number) {
+    return this.httpClient.post<CastCredit[]>(`${this.baseUrl}/cast/${id}/tmdb/${tmdbId}`, {});
+  }
+
 }
