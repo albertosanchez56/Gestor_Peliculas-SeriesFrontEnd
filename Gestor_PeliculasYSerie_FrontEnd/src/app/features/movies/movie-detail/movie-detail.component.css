@@ -1,10 +1,10 @@
 /* ===== BASE ===== */
 .movie-details-container {
-    position: relative;
+  position: relative;
   z-index: 2;
   max-width: 1200px;
   margin: 0 auto;
-  margin-top: -40px; /* solapa bajo el degradado del hero */
+  margin-top: -500px; /* solapa bajo el degradado del hero */
   padding: 20px;
   background-color: #303030;
   border-radius: 12px;
@@ -48,7 +48,7 @@ hr {
   position: relative;
   isolation: isolate;
   width: 100%;
-  height: clamp(600px, 38vh, 460px);
+  height: clamp(1000px, 38vh, 460px); /* lo dejo como lo tenías */
   overflow: hidden;           /* recorta imagen/gradiente */
   border-radius: 6px;
   margin-bottom: 16px;
@@ -83,24 +83,25 @@ hr {
   pointer-events: none;    /* que no bloquee clicks */
 }
 
-
-/* contenido por encima (póster + tráiler) */
+/* ===== CONTENIDO (póster + tráiler) ===== */
 .hero-content {
   position: relative;
   z-index: 1;
   max-width: 1200px;
   margin: 0 auto;
   padding: 24px 20px 80px; /* espacio para que el degradado cubra bien */
+
+  /* SIEMPRE dos columnas: poster (col 1) + trailer (col 2) */
   display: grid;
-  grid-template-columns: 310px 1fr; /* poster + trailer */
+  grid-template-columns: clamp(140px, 26vw, 310px) 1fr;
   gap: 24px;
 }
 
-/* póster */
+/* póster responsivo */
 .hero-poster {
   position: relative;
   width: 100%;
-  max-width: 310px;
+  max-width: none; /* el tamaño lo controla la columna con clamp */
 }
 .hero-poster img {
   width: 100%;
@@ -204,29 +205,36 @@ hr {
 .toggle-btn:hover { background: #555; }
 
 /* ===== RESPONSIVE ===== */
+/* En vez de apilar, reducimos progresivamente la columna del póster */
 @media (max-width: 1024px) {
   .hero-content {
-    grid-template-columns: 240px 1fr;
+    grid-template-columns: clamp(130px, 26vw, 260px) 1fr;
     gap: 18px;
   }
+  .movie-details-container {margin-top: -550px;}
   .movie-title { font-size: 2rem; }
 }
 
 @media (max-width: 768px) {
   .hero-content {
-    grid-template-columns: 1fr;   /* apila poster y trailer */
+    grid-template-columns: clamp(120px, 25vw, 220px) 1fr; /* poster más estrecho */
     padding-bottom: 60px;
   }
-  .hero-poster { max-width: 280px; }
   .movie-header {
     flex-direction: column;
     align-items: flex-start;
   }
   .movie-title { font-size: 1.8rem; }
   .movie-rating { font-size: 1rem; }
-  .movie-details-container { margin-top: -24px; }
+  .movie-details-container {margin-top: -650px;}
+  /* dejamos el margin-top como lo tienes */
 }
 
 @media (max-width: 480px) {
+  .hero-content {
+    grid-template-columns: clamp(100px, 30vw, 300px) 1fr;
+    gap: 12px;
+  }
   .cast-grid { grid-template-columns: repeat(2, 1fr); }
+  .movie-details-container {margin-top: -750px;}
 }
