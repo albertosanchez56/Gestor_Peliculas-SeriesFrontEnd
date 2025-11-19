@@ -1,0 +1,36 @@
+
+<section class="sectionindex">
+    <img src="assets/imagenes/pulp.jpeg">
+    <img src="assets/imagenes/regreso.jpg">
+    <img src="assets/imagenes/akira.jpg">
+    <img src="assets/imagenes/terminator.jpg">
+  </section>
+
+<div class="titulos">
+  <h1>Películas</h1>
+</div>
+
+<div class="divsproductos">
+  <a class="product"
+     *ngFor="let m of movies"
+     [routerLink]="['/movies', m.id]">
+    <img class="blur-in"
+         [src]="m.posterUrl || 'assets/imagenes/placeholder-poster.png'"
+         [alt]="m.title" />
+    <div class="overlay">
+      <p class="titleproducto">{{ m.title }}</p>
+      <p class="rating">⭐ {{ m.averageRating ?? '—' }}</p>
+      <p class="descripcion">{{ m.description || 'Sin descripción.' }}</p>
+    </div>
+  </a>
+</div>
+
+<div class="paginacion">
+  <button class="pg-btn" (click)="prev()" [disabled]="!canPrev">Anterior</button>
+  <span class="pg-info">{{ pageLabel }}</span>
+  <button class="pg-btn" (click)="next()" [disabled]="!canNext">Siguiente</button>
+</div>
+
+<div class="paginacion" *ngIf="loading">
+  <span class="pg-info">Cargando…</span>
+</div>

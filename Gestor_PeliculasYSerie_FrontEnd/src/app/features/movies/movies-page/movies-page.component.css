@@ -1,0 +1,27 @@
+/* Contenedor de paginación */
+.paginacion {
+  margin: 24px auto 40px;
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  justify-content: center;
+  color: #eee;
+}
+
+/* Botones */
+.pg-btn {
+  background: linear-gradient(180deg, #B67629, #8f5a1f);
+  color: #fff;
+  border: 0;
+  border-radius: 8px;
+  padding: 10px 16px;
+  font-size: 0.95rem;
+  cursor: pointer;
+  box-shadow: 0 4px 12px rgba(0,0,0,.25);
+  transition: transform .08s ease, filter .2s ease, box-shadow .2s ease;
+}
+.pg-btn:hover { filter: brightness(1.05); box-shadow: 0 6px 16px rgba(0,0,0,.35); }
+.pg-btn:active { transform: translateY(1px); }
+.pg-btn:disabled { opacity: .45; filter: grayscale(20%); cursor: not-allowed; box-shadow: none; }
+
+.pg-info { font-size: .95rem; color: #ddd; }
