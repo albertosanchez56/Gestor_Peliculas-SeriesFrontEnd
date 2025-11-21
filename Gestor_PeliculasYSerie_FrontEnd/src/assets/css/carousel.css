@@ -113,20 +113,6 @@
 }
 
 /* Media Queries para Responsividad */
-@media (max-width: 768px) {
-    .carousel-item {
-        min-width: 180px; /* Menor tamaño de producto en pantallas medianas */
-    }
 
-    .carousel-wrapper2 {
-        margin-left: 0; /* Eliminamos el margen en dispositivos pequeños */
-    }
-}
-
-@media (max-width: 480px) {
-    .carousel-item {
-        min-width: 150px; /* Aún más pequeño para dispositivos móviles */
-    }
-}
 
 .product { cursor: pointer; }

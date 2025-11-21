@@ -82,7 +82,9 @@ export class IndexComponent {
   private computeLeftPadding(): void {
     if (!isPlatformBrowser(this.platformId)) return;
     const w = window.innerWidth;
-    this.leftPaddingPx = (w >= 2000) ? 230 : (w >= 768 ? 175 : 0);
+    this.leftPaddingPx = (w >= 2048) ? 230      // ~2K o más
+                    : (w >= 1500) ? 175     // 1080p
+                    : 0;                    // <1080 → sin espacio
   }
 
   @HostListener('window:resize')
