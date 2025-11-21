@@ -16,6 +16,7 @@ header {
 }
 
 nav {
+   position: relative;
   background-color: #212121;
   box-shadow: 3px 3px 5px rgba(0, 0, 0, 0.1);
   display: flex;
@@ -77,7 +78,7 @@ nav ul li {
   display: flex;
   align-items: center;
   flex: 1;
-  max-width: 700px;
+  max-width: 60px;
   justify-content: center;
 }
 
@@ -100,7 +101,7 @@ nav ul li {
   background-color: white;
   color: white;
   border: none;
-  border-radius: 0px 4px 4px 0;
+  border-radius: 4px 4px 4px 4px;
   display: flex;
   /* Alineación del contenido */
   justify-content: center;
@@ -390,3 +391,159 @@ button:disabled {
 .product .overlay {
   padding: 16px;
 }
+
+/* Botón hamburguesa (oculto en escritorio) */
+nav ul.sidebar {
+  position: relative;
+}
+
+/* El botón NO ocupa hueco en el flujo: lo sacamos del flex */
+.menu-toggle-item {
+  position: absolute;   /* ← clave */
+  right: 8px;
+  top: 6px;
+  height: auto;         /* no uses la altura de los <li> */
+  display: none;        /* solo visible en móvil */
+}
+
+.menu-toggle {
+  background: transparent;
+  color: #fff;
+  border: 1px solid #444;
+  border-radius: 6px;
+  padding: 6px 10px;
+  cursor: pointer;
+  font-size: 18px;
+}
+
+/* Móvil: muestra el botón y pon la lista en columna como ya hacías */
+@media (max-width: 768px) {
+  .menu-toggle-item { display: block; }
+
+  .search-container {
+    position: absolute;
+    right: 56px;   /* hueco para el botón ☰ */
+    top: -10px;
+    display: flex;
+    align-items: center;
+  }
+  /* tu layout en columna */
+  nav ul { 
+    flex-direction: column;
+    align-items: stretch;
+      /* deja espacio para que el botón no tape el primer item */
+  }
+
+  /* Menú colapsado por defecto */
+  nav ul.sidebar:not(.open) > li:not(.logo-item):not(.menu-toggle-item):not(.search-container) {
+    display: none;
+  }
+
+  /* Cuando está abierto, muestra los items */
+  nav ul.sidebar.open > li {
+    display: block;
+  }
+
+  /* Mantén el dropdown funcionando */
+  .dropdown:hover .dropdown-menu {
+    /* en móvil, mejor que se active por click via Angular,
+       pero si lo mantienes por hover, no toques esto */
+  }
+}
+
+/* Escritorio: el botón no se ve y no afecta al layout */
+@media (min-width: 769px) {
+  .menu-toggle-item { display: none; }
+}
+
+/* --- Barra de búsqueda bajo el nav (cerrada por defecto) --- */
+.search-row {
+  background-color: #212121;
+  border-top: 1px solid #333;
+  overflow: hidden;
+  max-height: 0;           /* colapsada */
+  opacity: 0;
+  transition: max-height .28s ease, opacity .22s ease;
+}
+
+/* abierta */
+.search-row.open {
+  max-height: 90px;        /* suficiente para el form */
+  opacity: 1;
+}
+
+/* contenido centrado y con el mismo ancho visual que usas en el sitio */
+.search-form {
+  max-width: 1200px;       /* igual que tu layout */
+  margin: 0 auto;
+  padding: 10px 12px;
+  display: flex;
+  gap: 10px;
+  align-items: center;
+}
+
+.search-input {
+  flex: 1;
+  padding: 10px 12px;
+  border: 1px solid #444;
+  border-radius: 6px;
+  background: #fff;        /* barra blanca como pediste */
+  color: #111;
+  font-family: inherit;
+}
+
+.search-input:focus {
+  outline: none;
+  border-color: #888;
+}
+
+.search-go {
+  padding: 10px 14px;
+  border: none;
+  border-radius: 6px;
+  background: #B67629;
+  color: #fff;
+  cursor: pointer;
+}
+
+.search-go:hover {
+  filter: brightness(1.05);
+}
+
+/* Asegura que el botón de lupa no rompa tu layout */
+.search-icon .botonNav2 {
+  padding: 0 18px; /* un poco más estrecho que el resto si quieres */
+}
+
+/* En móvil sigue funcionando bien */
+@media (max-width: 768px) {
+  .search-form {
+    padding: 10px;
+  }
+}
+/* Que la fila ocupe todo el ancho */
+.search-row {
+  width: 100%;
+}
+
+/* La forma ocupa todo el ancho — sin max-width */
+.search-form {
+  max-width: none;
+  width: 100%;
+}
+
+/* Input flexible y sin mínimo que rompa el layout */
+.search-input {
+  flex: 1 1 auto;
+  min-width: 0;              /* <— clave para que no empuje al botón */
+}
+
+/* Botón que NO se estire */
+.search-go {
+  flex: 0 0 auto;
+  width: auto !important;    /* por si algún estilo previo le pone ancho */
+  white-space: nowrap;       /* que no se parta el texto */
+}
+
+
+

@@ -1,5 +1,5 @@
 <nav>
-  <ul class="sidebar">
+  <ul class="sidebar" [class.open]="isMenuOpen">
     <li onclick="hideSidebar()" class="logo-item">
       <button class="botonNav">
         <img class="logo2" routerLink="Home" src="assets/imagenes/logo.PNG" />
@@ -14,15 +14,32 @@
         <button onclick="alert('Editar')">Usuarios</button>
       </div>
     </li>
-    <li class="search-container"><input type="text" class="search-bar" placeholder="Buscar...">
-      <button class="search-button"><img src="assets/imagenes/lupa.png" /></button>
+    
+    <li class="search-container">
+      <button class="search-button" (click)="searchOpen = !searchOpen"
+              aria-controls="search-row" [attr.aria-expanded]="searchOpen">
+        <img src="assets/imagenes/lupa.png" />
+      </button>
     </li>
     <li><button routerLink="Home" class="botonNav2">Inicio</button></li>
     <li><button routerLink="/movies" class="botonNav2">Películas</button></li>
     <li><button onclick="location.href='/Favoritos'" class="botonNav2">Favoritos</button></li>
     <li><button onclick="location.href='/login'" class="botonNav2">Mi cuenta</button></li>
   </ul>
+
+  <li class="menu-toggle-item">
+  <button class="menu-toggle" (click)="toggleMenu()" aria-label="Abrir/cerrar menú">☰</button>
+  </li>
+
 </nav>
+<div id="search-row" class="search-row" [class.open]="searchOpen">
+  <form class="search-form" (ngSubmit)="onSearch()">
+    <input class="search-input" type="text" name="q"
+           [(ngModel)]="q" placeholder="Buscar películas..."
+           autocomplete="off" />
+    <button type="submit" class="search-go">Buscar</button>
+  </form>
+</div>
 
 <div class="container">
   <router-outlet></router-outlet>
