@@ -12,6 +12,13 @@ export interface CastCredit {
   orderIndex?: number;
 }
 
+export interface MovieSuggestionDTO {
+  id: number;
+  title: string;
+  releaseDate?: string;
+  posterUrl?: string;
+}
+
 @Injectable({
   providedIn: 'root'
 })
@@ -68,5 +75,19 @@ export class MovieService {
   importCast(id: number, tmdbId: number) {
     return this.httpClient.post<CastCredit[]>(`${this.baseUrl}/cast/${id}/tmdb/${tmdbId}`, {});
   }
+
+  searchSuggestions(q: string, size = 8) {
+    return this.httpClient.get<MovieSuggestionDTO[]>(
+      `${this.baseUrl}/search`,
+      { params: { q, size } }
+    );
+  }
+  getPeliculasBrowser(page: number, size: number, q?: string) {
+  const params: any = { page, size };
+  if (q && q.trim()) params.q = q.trim();
+  return this.httpClient.get<Movies[]>(`${this.baseUrl}/peliculas`, { params });
+}
+
+
 
 }

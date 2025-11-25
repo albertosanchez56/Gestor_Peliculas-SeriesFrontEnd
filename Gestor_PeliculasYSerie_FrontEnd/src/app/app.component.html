@@ -32,14 +32,32 @@
   </li>
 
 </nav>
-<div id="search-row" class="search-row" [class.open]="searchOpen">
-  <form class="search-form" (ngSubmit)="onSearch()">
-    <input class="search-input" type="text" name="q"
-           [(ngModel)]="q" placeholder="Buscar películas..."
-           autocomplete="off" />
+<!-- Debajo de tu <nav> ... -->
+<div class="search-row" [class.open]="searchOpen">
+  <form class="search-form" (submit)="onSubmitSearch()">
+    <input
+      class="search-input"
+      type="text"
+      placeholder="Buscar películas, directores, géneros..."
+      [formControl]="qCtrl"
+      (keydown.escape)="closeSearch()"
+      aria-label="Buscar"
+    />
     <button type="submit" class="search-go">Buscar</button>
   </form>
+
+  <!-- Panel de sugerencias (autocomplete) -->
+  <div class="sugg-panel" *ngIf="suggestions?.length && searchOpen">
+    <button class="sugg-item"
+            *ngFor="let s of suggestions"
+            (click)="onPickSuggestion(s)">
+      <img *ngIf="s.posterUrl" [src]="s.posterUrl" width="28" height="42" loading="lazy" alt="" />
+      <span>{{ s.title }}</span>
+      <small *ngIf="s.releaseDate">&nbsp;({{ s.releaseDate | date:'yyyy' }})</small>
+    </button>
+  </div>
 </div>
+
 
 <div class="container">
   <router-outlet></router-outlet>

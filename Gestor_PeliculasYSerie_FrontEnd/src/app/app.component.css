@@ -1,0 +1,55 @@
+.search-row {
+    position: relative;
+    /* NUEVO: crea contexto para posicionar el panel */
+    z-index: 1000;
+    /* NUEVO: por encima del resto de la página */
+    overflow: visible;
+}
+
+.search-form {
+    width: 100%;
+    max-width: none;
+    display: flex;
+    gap: 10px;
+    padding: 10px 12px;
+}
+
+.search-input {
+    flex: 1 1 auto;
+    min-width: 0;
+}
+
+.sugg-panel {
+    position: absolute;
+    /* flota respecto a .search-row */
+    left: 0;
+    right: 0;
+    top: 100%;
+    /* justo bajo la fila del buscador */
+    background: #212121;
+    border: 1px solid #333;
+    max-height: 50vh;
+    /* por si hay muchas sugerencias */
+    overflow: auto;
+    /* scroll interno */
+    z-index: 1001;
+    /* por encima de .search-row */
+    box-shadow: 0 10px 30px rgba(0, 0, 0, .35);
+}
+
+.sugg-item {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 12px;
+    background: transparent;
+    color: #fff;
+    border: 0;
+    text-align: left;
+    cursor: pointer;
+}
+
+.sugg-item:hover {
+    background: #2a2a2a;
+}

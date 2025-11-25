@@ -1,13 +1,15 @@
 import { Component, Renderer2 } from '@angular/core';
 import { Router, RouterLink, RouterOutlet } from '@angular/router';
 import { ListaDirectoresComponent } from "./features/directores/lista-directores/lista-directores.component";
-import { FormsModule } from '@angular/forms';
+import { FormControl, FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { HttpClient } from '@angular/common/http';
 import { CommonModule } from '@angular/common';
+import { MovieService, MovieSuggestionDTO } from './features/movies/service/movie.service';
+import { debounceTime, distinctUntilChanged, switchMap, tap, of } from 'rxjs';
 
 @Component({
   selector: 'app-root',
-  imports: [RouterOutlet, ListaDirectoresComponent, RouterLink, FormsModule, CommonModule],
+  imports: [RouterOutlet, ListaDirectoresComponent, RouterLink, FormsModule, CommonModule, ReactiveFormsModule],
   templateUrl: './app.component.html',
   styleUrl: './app.component.css'
 })
@@ -20,7 +22,27 @@ export class AppComponent {
   menuOpen = false;   // si usas el menú móvil
   q = '';
 
-  constructor(private router: Router, private renderer: Renderer2) {}
+  qCtrl = new FormControl('');
+  suggestions: MovieSuggestionDTO[] = [];
+
+  constructor(private movieSvc: MovieService, private router: Router, private renderer: Renderer2) {}
+
+  ngOnInit() {
+    // Autocomplete reactivo
+    this.qCtrl.valueChanges.pipe(
+      debounceTime(200),
+      distinctUntilChanged(),
+      switchMap(q => {
+        const text = (q ?? '').trim();
+        if (!text) {
+          this.suggestions = [];
+          return of([]);
+        }
+        return this.movieSvc.searchSuggestions(text, 8);
+      }),
+      tap(rows => this.suggestions = rows)
+    ).subscribe();
+  }
 
   toggleMenu(): void {
     this.isMenuOpen = !this.isMenuOpen;
@@ -49,5 +71,38 @@ export class AppComponent {
     // (opcional) cierra la barra tras buscar
     // this.searchOpen = false;
 }
+
+toggleSearch(): void {
+    this.searchOpen = !this.searchOpen;
+    if (this.searchOpen) {
+      // foco al input en el siguiente tick
+      setTimeout(() => {
+        const el = document.querySelector<HTMLInputElement>('.search-input');
+        el?.focus();
+      }, 0);
+    } else {
+      this.suggestions = [];
+      this.qCtrl.setValue('', { emitEvent: false });
+    }
+  }
+
+  closeSearch(): void {
+    this.searchOpen = false;
+    this.suggestions = [];
+  }
+
+  onSubmitSearch(): void {
+    const q = (this.qCtrl.value ?? '').trim();
+    if (!q) return;
+    // Navega a la página de películas con query param q y resetea a pag 0
+    this.router.navigate(['/movies'], { queryParams: { q, page: 0 } });
+    this.closeSearch();
+  }
+
+  onPickSuggestion(s: MovieSuggestionDTO): void {
+    // Ir al detalle directamente
+    this.router.navigate(['/movies', s.id]);
+    this.closeSearch();
+  }
 
 }
