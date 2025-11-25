@@ -5,6 +5,9 @@ import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
 
 import { Movies } from '../movies';
 import { CastCredit, MovieService } from '../service/movie.service';
+import { isPlatformBrowser, DOCUMENT } from '@angular/common'
+import { Inject, PLATFORM_ID } from '@angular/core';
+import { ViewportScroller } from '@angular/common';
 
 @Component({
   selector: 'app-movie-detail',
@@ -22,27 +25,47 @@ export class MovieDetailComponent implements OnInit {
   showAllCast = false;
 
   constructor(
-    private route: ActivatedRoute,
-    private movieSvc: MovieService,
-    private sanitizer: DomSanitizer
-  ) {}
+  private route: ActivatedRoute,
+  private movieSvc: MovieService,
+  private sanitizer: DomSanitizer,
+  @Inject(PLATFORM_ID) private platformId: Object,
+  private viewport: ViewportScroller,
+  @Inject(DOCUMENT) private doc: Document
+) {}
+
+private get isBrowser() { 
+  return isPlatformBrowser(this.platformId); 
+}
 
   ngOnInit(): void {
-    const id = Number(this.route.snapshot.paramMap.get('id'));
-    if (!id) { this.loading = false; return; }
+  this.route.paramMap.subscribe(pm => {
+  const id = Number(pm.get('id'));
+  if (!id) { this.loading = false; return; }
 
-    this.movieSvc.getById(id).subscribe({
-      next: (m) => {
-        this.movie = m;
-        // cargar cast cuando ya tenemos película
-        this.movieSvc.getCast(m.id).subscribe({
-          next: (c) => this.cast = c ?? [],
-          complete: () => this.loading = false
-        });
-      },
-      error: () => this.loading = false
-    });
-  }
+  this.loading = true;
+
+  this.movieSvc.getById(id).subscribe({
+    next: (m) => {
+      this.movie = m;
+
+      this.movieSvc.getCast(m.id).subscribe({
+        next: (c) => this.cast = c ?? [],
+        complete: () => this.loading = false
+      });
+
+      // Solo en navegador
+      if (this.isBrowser) {
+        // opción A: ViewportScroller (recomendada)
+        this.viewport.scrollToPosition([0, 0]);
+
+        // opción B (alternativa): usando DOCUMENT
+        // this.doc.defaultView?.scrollTo({ top: 0, behavior: 'smooth' });
+      }
+    },
+    error: () => this.loading = false
+  });
+});
+}
 
   /* ---------- UI helpers ---------- */
   backdropSrc(m?: Movies): string {
