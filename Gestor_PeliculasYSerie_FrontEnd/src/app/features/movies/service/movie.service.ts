@@ -1,4 +1,4 @@
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpParams } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import { Movies } from '../movies';
@@ -82,11 +82,17 @@ export class MovieService {
       { params: { q, size } }
     );
   }
-  getPeliculasBrowser(page: number, size: number, q?: string) {
-  const params: any = { page, size };
-  if (q && q.trim()) params.q = q.trim();
+  getPeliculasBrowser(page: number, size: number, q?: string): Observable<Movies[]> {
+  let params = new HttpParams()
+    .set('page', String(page))
+    .set('size', String(size));
+  if (q && q.trim().length) {
+    params = params.set('q', q.trim());
+  }
+  // ANTES: return this.httpClient.get<Movies[]>('/peliculas', { params });
   return this.httpClient.get<Movies[]>(`${this.baseUrl}/peliculas`, { params });
 }
+
 
 
 

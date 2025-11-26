@@ -6,20 +6,21 @@ import { CommonModule } from '@angular/common';
 
 @Component({
   selector: 'app-movies-page',
-  imports: [RouterLink,CommonModule],
+  imports: [RouterLink, CommonModule],
   templateUrl: './movies-page.component.html',
   styleUrl: './movies-page.component.css'
 })
 export class MoviesPageComponent {
- movies: Movies[] = [];
+  movies: Movies[] = [];
   loading = false;
 
   page = 0;                 // 0-based
-  size = 24;                // se ajusta dinámicamente (28 en 2K, 25 en 1080p)
+  size = 24;                // 28 en 2K, 25 en 1080p (se ajusta dinámicamente)
   lastPageKnown: number | null = null;
 
   private cache = new Map<number, Movies[]>();
   private sizeBucket = '';  // '2k' | '1080' | 'default'
+  currentQuery = '';        // ← AQUÍ guardamos ?q
 
   constructor(
     private movieSvc: MovieService,
@@ -28,15 +29,24 @@ export class MoviesPageComponent {
   ) {}
 
   ngOnInit(): void {
-    // 1) Determinar bucket inicial por viewport
+    // 1) Tamaño por viewport
     this.applyPageSizeFromViewport(true);
 
-    // 2) Escuchar query params (?page, ?size) y cargar la página correspondiente
+    // 2) Reaccionar a cambios de query params (?page, ?size, ?q)
     this.route.queryParamMap.subscribe(q => {
       const qpPage = Number(q.get('page'));
       const qpSize = Number(q.get('size'));
+      const qpQuery = (q.get('q') || '').trim();
 
-      // Si viene size en la URL y es válido, úsalo (tiene prioridad sobre bucket)
+      // Si cambia el término de búsqueda, resetea todo
+      if (qpQuery !== this.currentQuery) {
+        this.currentQuery = qpQuery;
+        this.cache.clear();
+        this.lastPageKnown = null;
+        this.page = 0;
+      }
+
+      // Si viene size en la URL, respétalo
       if (!Number.isNaN(qpSize) && qpSize > 0) {
         if (qpSize !== this.size) {
           this.size = qpSize;
@@ -44,12 +54,12 @@ export class MoviesPageComponent {
           this.lastPageKnown = null;
         }
       } else {
-        // Si no viene size en la URL, ajusta por bucket actual
+        // Si no viene size, ajústalo por bucket actual
         this.applyPageSizeFromViewport(false);
       }
 
       const targetPage = !Number.isNaN(qpPage) && qpPage >= 0 ? qpPage : 0;
-      this.goTo(targetPage, /*skipUrlUpdate*/ true); // no escribas de nuevo la URL aquí
+      this.goTo(targetPage, /*skipUrlUpdate*/ true);
     });
   }
 
@@ -63,7 +73,7 @@ export class MoviesPageComponent {
     if (w >= 2048) {      // “2K” aprox y superiores
       newBucket = '2k';
       newSize = 28;
-    } else if (w >= 1920) { // 1080p típico (ancho >= 1920)
+    } else if (w >= 1920) { // 1080p típico
       newBucket = '1080';
       newSize = 25;
     } else {
@@ -82,7 +92,7 @@ export class MoviesPageComponent {
         }
       }
     } else {
-      this.size = newSize; // asegúralo por si acaso
+      this.size = newSize;
     }
   }
 
@@ -100,7 +110,9 @@ export class MoviesPageComponent {
     if (p < 0) return;
     if (this.lastPageKnown !== null && p > this.lastPageKnown) return;
 
-    const cached = this.cache.get(p);
+    // Si hay caché para esta página con este filtro, úsala
+    const cacheKey = this.cacheKey(p, this.currentQuery, this.size);
+    const cached = this.cache.get(cacheKey);
     if (cached) {
       this.movies = cached;
       this.page = p;
@@ -109,10 +121,10 @@ export class MoviesPageComponent {
     }
 
     this.loading = true;
-    this.movieSvc.getPeliculas(p, this.size).subscribe({
+    this.movieSvc.getPeliculasBrowser(p, this.size, this.currentQuery).subscribe({
       next: (rows: Movies[]) => {
         this.movies = rows;
-        this.cache.set(p, rows);
+        this.cache.set(cacheKey, rows);
         this.page = p;
 
         if (rows.length < this.size) {
@@ -127,10 +139,10 @@ export class MoviesPageComponent {
   }
 
   private updateUrl(): void {
-    // Escribe ?page y ?size en la URL (sin recargar)
+    // Escribe ?page, ?size y ?q en la URL (sin recargar)
     this.router.navigate([], {
       relativeTo: this.route,
-      queryParams: { page: this.page, size: this.size },
+      queryParams: { page: this.page, size: this.size, q: this.currentQuery || null },
       queryParamsHandling: 'merge',
       replaceUrl: true,
     });
@@ -154,5 +166,15 @@ export class MoviesPageComponent {
       return `${current} / ${total}`;
     }
     return `Página ${current}`;
+  }
+
+  private cacheKey(p: number, q: string, size: number): number {
+    // clave simple y rápida: combina valores en un hash numérico
+    // (también puedes usar un string `${p}|${size}|${q}`)
+    let h = 17;
+    h = (h * 31 + p) | 0;
+    h = (h * 31 + size) | 0;
+    for (let i = 0; i < q.length; i++) h = (h * 31 + q.charCodeAt(i)) | 0;
+    return h;
   }
 }

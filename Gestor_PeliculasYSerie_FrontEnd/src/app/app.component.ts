@@ -21,8 +21,9 @@ export class AppComponent {
   searchOpen = false;
   menuOpen = false;   // si usas el menú móvil
   q = '';
+  
 
-  qCtrl = new FormControl('');
+  qCtrl = new FormControl<string>('', { nonNullable: true });
   suggestions: MovieSuggestionDTO[] = [];
 
   constructor(private movieSvc: MovieService, private router: Router, private renderer: Renderer2) {}
@@ -65,11 +66,12 @@ export class AppComponent {
   }
   onSearch(): void {
     const term = this.q.trim();
-    if (!term) return;
-    // Navega a tu página de películas con query param
-    this.router.navigate(['/movies'], { queryParams: { q: term } });
-    // (opcional) cierra la barra tras buscar
-    // this.searchOpen = false;
+  if (!term) return;
+  this.router.navigate(['/movies'], {
+    queryParams: { q: term, page: 0 },   // usa 'q', no 'term'
+    queryParamsHandling: 'merge'
+  });
+  this.searchOpen = false;
 }
 
 toggleSearch(): void {
@@ -91,11 +93,14 @@ toggleSearch(): void {
     this.suggestions = [];
   }
 
-  onSubmitSearch(): void {
-    const q = (this.qCtrl.value ?? '').trim();
-    if (!q) return;
-    // Navega a la página de películas con query param q y resetea a pag 0
-    this.router.navigate(['/movies'], { queryParams: { q, page: 0 } });
+  onSubmitSearch(ev?: Event): void {
+     ev?.preventDefault();               // ← evita recarga de la página
+    const q = this.qCtrl.value.trim();
+    // Navega a la página de películas con ?q=...
+    this.router.navigate(['/movies'], {
+      queryParams: { q: q || null, page: 0 },   // resetea a página 0
+      queryParamsHandling: 'merge'
+    });
     this.closeSearch();
   }
 
