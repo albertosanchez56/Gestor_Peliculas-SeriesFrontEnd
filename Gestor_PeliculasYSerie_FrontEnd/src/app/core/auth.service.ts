@@ -1,59 +1,59 @@
 // src/app/core/auth/auth.service.ts
 import { Injectable, Inject, PLATFORM_ID } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { BehaviorSubject, Observable, tap } from 'rxjs';
+import { BehaviorSubject, map, Observable, of, tap} from 'rxjs';
 import { isPlatformBrowser } from '@angular/common';
-import { AuthResponse, LoginRequest, RegisterRequest, UserInfo } from './auth.models';
+import { AuthResponse, CurrentUser, LoginRequest, RegisterRequest } from './auth.models';
 
 @Injectable({ providedIn: 'root' })
 export class AuthService {
-  private readonly baseUrl = 'http://localhost:9090/usuario';
+  private readonly baseUrl = 'http://localhost:9090/usuario/auth';
   private readonly tokenKey = 'auth_token';
   private readonly userKey = 'auth_user';
+  private readonly browser: boolean;
 
-  private readonly isBrowser: boolean;
-
-  private userSubject: BehaviorSubject<UserInfo | null>;
-
-  user$: Observable<UserInfo | null>;
+  private userSubject = new BehaviorSubject<CurrentUser | null>(null);
+  user$ = this.userSubject.asObservable();
 
   constructor(
     private http: HttpClient,
     @Inject(PLATFORM_ID) platformId: Object
   ) {
-    this.isBrowser = isPlatformBrowser(platformId);
+    this.browser = isPlatformBrowser(platformId);
 
-    // 👇 Importante: no leer localStorage si no es browser
-    const initialUser = this.isBrowser ? this.readUserFromStorage() : null;
-
-    this.userSubject = new BehaviorSubject<UserInfo | null>(initialUser);
-    this.user$ = this.userSubject.asObservable();
+    if (this.browser) {
+      const u = this.readUser();
+      if (u) this.userSubject.next(u);
+    }
   }
 
-  login(req: LoginRequest): Observable<AuthResponse> {
-    return this.http.post<AuthResponse>(`${this.baseUrl}/auth/login`, req).pipe(
-      tap(res => {
+  register(dto: RegisterRequest): Observable<void> {
+    return this.http.post<void>(`${this.baseUrl}/register`, dto);
+  }
+
+  login(dto: LoginRequest): Observable<CurrentUser> {
+    return this.http.post<AuthResponse>(`${this.baseUrl}/login`, dto).pipe(
+      tap((res: AuthResponse) => {
         this.saveToken(res.accessToken);
         this.saveUser(res.user);
-        this.userSubject.next(res.user);
-      })
+      }),
+      map((res: AuthResponse) => res.user)
     );
   }
 
+  me(): Observable<CurrentUser> {
+    return this.http.get<CurrentUser>(`${this.baseUrl}/me`).pipe(
+      tap((u: CurrentUser) => this.saveUser(u))
+    );
+  }
+
+  loadMe(): Observable<CurrentUser | null> {
+    if (!this.isLoggedIn()) return of(null);
+    return this.me();
+  }
+
   logout(): void {
-    if (!this.isBrowser) return;
-    localStorage.removeItem(this.tokenKey);
-    localStorage.removeItem(this.userKey);
-    this.userSubject.next(null);
-  }
-
-  getToken(): string | null {
-    if (!this.isBrowser) return null;
-    return localStorage.getItem(this.tokenKey);
-  }
-
-  getUser(): UserInfo | null {
-    return this.userSubject.value;
+    this.clearSession();
   }
 
   isLoggedIn(): boolean {
@@ -61,45 +61,43 @@ export class AuthService {
   }
 
   isAdmin(): boolean {
-    return this.getUser()?.role === 'ADMIN';
+    return this.userSubject.value?.role === 'ADMIN';
   }
 
-  register(req: RegisterRequest) {
-    return this.http.post<void>(`${this.baseUrl}/auth/register`, req);
+  getCurrentUser(): CurrentUser | null {
+    return this.userSubject.value;
   }
 
-  // Opcional: validar token al arrancar
-  loadMe(): Observable<UserInfo> {
-    return this.http.get<UserInfo>(`${this.baseUrl}/auth/me`).pipe(
-      tap({
-        next: user => {
-          this.saveUser(user);
-          this.userSubject.next(user);
-        },
-        error: () => this.logout()
-      })
-    );
+  getToken(): string | null {
+    if (!this.browser) return null;
+    return localStorage.getItem(this.tokenKey);
   }
 
   private saveToken(token: string): void {
-    if (!this.isBrowser) return;
+    if (!this.browser) return;
     localStorage.setItem(this.tokenKey, token);
   }
 
-  private saveUser(user: UserInfo): void {
-    if (!this.isBrowser) return;
-    localStorage.setItem(this.userKey, JSON.stringify(user));
+  private saveUser(u: CurrentUser): void {
+    if (!this.browser) return;
+    localStorage.setItem(this.userKey, JSON.stringify(u));
+    this.userSubject.next(u);
   }
 
-  private readUserFromStorage(): UserInfo | null {
-    const raw = localStorage.getItem(this.userKey);
-    if (!raw) return null;
+  private readUser(): CurrentUser | null {
     try {
-      return JSON.parse(raw) as UserInfo;
+      const raw = localStorage.getItem(this.userKey);
+      return raw ? (JSON.parse(raw) as CurrentUser) : null;
     } catch {
       return null;
     }
   }
 
-
+  private clearSession(): void {
+    if (this.browser) {
+      localStorage.removeItem(this.tokenKey);
+      localStorage.removeItem(this.userKey);
+    }
+    this.userSubject.next(null);
+  }
 }

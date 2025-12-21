@@ -55,9 +55,8 @@ export class AppComponent {
       this.displayName = user?.displayName ?? user?.username ?? '';
     });
 
-    if (this.auth.isLoggedIn()) {
-      this.auth.loadMe().subscribe();
-    }
+    this.auth.loadMe().subscribe();
+
   }
 
   logout(): void {

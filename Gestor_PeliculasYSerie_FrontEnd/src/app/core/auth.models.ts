@@ -1,26 +1,25 @@
+export interface LoginRequest {
+  login: string;        // (o el nombre que use tu backend: login / usernameOrEmail)
+  password: string;
+}
 
-export interface UserInfo {
+export interface CurrentUser {
   id: number;
   username: string;
   displayName: string;
-  role: 'USER' | 'ADMIN';
+  role: 'ADMIN' | 'USER';
 }
 
 export interface AuthResponse {
   accessToken: string;
-  tokenType: 'Bearer';
+  tokenType: string;           // "Bearer"
   expiresInSeconds: number;
-  user: UserInfo;
-}
-
-export interface LoginRequest {
-  login: string;    // username o email
-  password: string;
+  user: CurrentUser;
 }
 
 export interface RegisterRequest {
   username: string;
   email: string;
+  displayName: string;
   password: string;
-  displayName?: string;
 }

@@ -2,6 +2,7 @@ import { CanActivateFn, Router } from '@angular/router';
 import { inject } from '@angular/core';
 import { AuthService } from './auth.service';
 
+
 export const adminGuard: CanActivateFn = () => {
   const auth = inject(AuthService);
   const router = inject(Router);
@@ -10,9 +11,8 @@ export const adminGuard: CanActivateFn = () => {
     router.navigate(['/login']);
     return false;
   }
-
   if (auth.isAdmin()) return true;
 
-  router.navigate(['/Home']); // o a una página "no autorizado"
+  router.navigate(['/Home']); // o donde quieras
   return false;
 };

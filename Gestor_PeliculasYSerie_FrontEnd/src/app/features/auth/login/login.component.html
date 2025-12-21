@@ -1,18 +1,24 @@
-<div class="login-card">
+<br>
+<div class="auth-box">
   
-  <form (ngSubmit)="submit()">
-    <h2>Iniciar sesión</h2>
 
+  <form [formGroup]="form" (ngSubmit)="submit()">
+    <h2>Iniciar sesión</h2>
     <label>Usuario o email</label>
-    <input [(ngModel)]="login" name="login" required />
+    <input formControlName="usernameOrEmail" type="text" placeholder="alberto / alberto@email.com" />
 
     <label>Contraseña</label>
-    <input [(ngModel)]="password" name="password" type="password" required />
+    <input formControlName="password" type="password" placeholder="••••••••" />
 
-    <button type="submit" [disabled]="loading">
-      {{ loading ? 'Entrando...' : 'Entrar' }}
-    </button>
-
-    <p class="error" *ngIf="error">{{ error }}</p>
+    <button type="submit" [disabled]="loading">Entrar</button>
   </form>
+
+  <p class="error" *ngIf="error">{{ error }}</p>
+
+  <p class="link">
+    ¿No tienes cuenta?
+    <a routerLink="/register">Regístrate</a>
+  </p>
 </div>
+
+<br>

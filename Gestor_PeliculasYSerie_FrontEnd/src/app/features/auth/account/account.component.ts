@@ -3,7 +3,6 @@ import { Component } from '@angular/core';
 import { RouterModule } from '@angular/router';
 import { AuthService } from '../../../core/auth.service';
 
-
 @Component({
   selector: 'app-account',
   standalone: true,
@@ -12,7 +11,7 @@ import { AuthService } from '../../../core/auth.service';
   <div class="login-card">
     <h2>Mi cuenta</h2>
 
-    <ng-container *ngIf="auth.getUser() as u; else noUser">
+    <ng-container *ngIf="auth.user$ | async as u; else noUser">
       <p><b>Usuario:</b> {{ u.username }}</p>
       <p><b>Nombre:</b> {{ u.displayName }}</p>
       <p><b>Rol:</b> {{ u.role }}</p>
