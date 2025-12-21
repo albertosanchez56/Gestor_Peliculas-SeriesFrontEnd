@@ -138,12 +138,13 @@ nav ul li {
   padding: 10px;
   border-radius: 0px;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-  z-index: 10;
+  pointer-events: auto;
+  z-index: 2000;
 }
 
 /* Mostrar el menú desplegable al pasar el ratón */
 .dropdown:hover .dropdown-menu {
-  display: block;
+  display: none;
 }
 
 /* Estilo para los botones del desplegable */
@@ -156,6 +157,10 @@ nav ul li {
   text-align: left;
   width: 100%;
   cursor: pointer;
+}
+
+.dropdown.open .dropdown-menu {
+  display: block;
 }
 
 .dropdown-menu button:hover {
@@ -465,12 +470,21 @@ nav ul.sidebar {
   max-height: 0;           /* colapsada */
   opacity: 0;
   transition: max-height .28s ease, opacity .22s ease;
+   position: relative;
+  z-index: 100;
+   pointer-events: auto;
+  
+}
+
+.search-row.blocked {
+  pointer-events: none;
 }
 
 /* abierta */
 .search-row.open {
   max-height: 90px;        /* suficiente para el form */
   opacity: 1;
+  
 }
 
 /* contenido centrado y con el mismo ancho visual que usas en el sitio */

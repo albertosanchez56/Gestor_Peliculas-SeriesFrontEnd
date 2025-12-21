@@ -1,56 +1,74 @@
 <nav>
   <ul class="sidebar" [class.open]="isMenuOpen">
-    <li onclick="hideSidebar()" class="logo-item">
+
+    <!-- Logo -->
+    <li class="logo-item">
       <button class="botonNav">
         <img class="logo2" routerLink="Home" src="assets/imagenes/logo.PNG" />
       </button>
     </li>
-    <li class="dropdown">
-      <button class="botonNav2">Admin</button>
+
+    <!-- Admin (solo si ADMIN) -->
+    <li class="dropdown" *ngIf="isAdmin" [class.open]="isAdminMenuOpen">
+      <button class="botonNav2" type="button" (click)="toggleAdminMenu($event)">
+        Admin
+      </button>
+
       <div class="dropdown-menu">
-        <button routerLink="directores">Directores</button>
-        <button routerLink="peliculas">Peliculas</button>
-        <button routerLink="generos">Generos</button>
-        <button onclick="alert('Editar')">Usuarios</button>
+        <button routerLink="directores" type="button" (click)="closeAdminMenu()">Directores</button>
+        <button routerLink="peliculas" type="button" (click)="closeAdminMenu()">Peliculas</button>
+        <button routerLink="generos" type="button" (click)="closeAdminMenu()">Generos</button>
+        <button routerLink="users" type="button" (click)="closeAdminMenu()">Usuarios</button>
       </div>
     </li>
-    
+
+
+    <!-- Search -->
     <li class="search-container">
-      <button class="search-button" (click)="searchOpen = !searchOpen"
-              aria-controls="search-row" [attr.aria-expanded]="searchOpen">
+      <button class="search-button" (click)="searchOpen = !searchOpen" aria-controls="search-row"
+        [attr.aria-expanded]="searchOpen">
         <img src="assets/imagenes/lupa.png" />
       </button>
     </li>
+
     <li><button routerLink="Home" class="botonNav2">Inicio</button></li>
     <li><button routerLink="/movies" class="botonNav2">Películas</button></li>
-    <li><button onclick="location.href='/Favoritos'" class="botonNav2">Favoritos</button></li>
-    <li><button onclick="location.href='/login'" class="botonNav2">Mi cuenta</button></li>
+
+    <!-- Favoritos (a futuro) -->
+    <li>
+      <button routerLink="/Favoritos" class="botonNav2" [disabled]="!isLoggedIn">
+        Favoritos
+      </button>
+    </li>
+
+    <!-- Cuenta -->
+    <li *ngIf="!isLoggedIn">
+      <button routerLink="/login" class="botonNav2">Mi cuenta</button>
+    </li>
+
+    <li *ngIf="isLoggedIn">
+      <button class="botonNav2" (click)="logout()">
+        Cerrar sesión ({{ displayName }})
+      </button>
+    </li>
   </ul>
 
   <li class="menu-toggle-item">
-  <button class="menu-toggle" (click)="toggleMenu()" aria-label="Abrir/cerrar menú">☰</button>
+    <button class="menu-toggle" (click)="toggleMenu()" aria-label="Abrir/cerrar menú">☰</button>
   </li>
-
 </nav>
 
-<div class="search-row" [class.open]="searchOpen">
+
+<div class="search-row" [class.blocked]="isAdminMenuOpen" [class.open]="searchOpen" id="search-row">
   <form class="search-form" (submit)="onSubmitSearch()">
-    <input
-      class="search-input"
-      type="text"
-      placeholder="Buscar películas, directores, géneros..."
-      [formControl]="qCtrl"
-      (keydown.escape)="closeSearch()"
-      aria-label="Buscar"
-    />
+    <input class="search-input" type="text" placeholder="Buscar películas, directores, géneros..." [formControl]="qCtrl"
+      (keydown.escape)="closeSearch()" aria-label="Buscar" />
     <button type="submit" class="search-go">Buscar</button>
   </form>
 
   <!-- Panel de sugerencias (autocomplete) -->
   <div class="sugg-panel" *ngIf="suggestions?.length && searchOpen">
-    <button class="sugg-item"
-            *ngFor="let s of suggestions"
-            (click)="onPickSuggestion(s)">
+    <button class="sugg-item" *ngFor="let s of suggestions" (click)="onPickSuggestion(s)">
       <img *ngIf="s.posterUrl" [src]="s.posterUrl" width="28" height="42" loading="lazy" alt="" />
       <span>{{ s.title }}</span>
       <small *ngIf="s.releaseDate">&nbsp;({{ s.releaseDate | date:'yyyy' }})</small>
@@ -65,29 +83,29 @@
 
 <footer class="footer">
   <div class="footer-content">
-      <!-- Logo o nombre del sitio -->
-      <div class="footer-logo">
-          <h2>FilmScore</h2>
-      </div>
+    <!-- Logo o nombre del sitio -->
+    <div class="footer-logo">
+      <h2>FilmScore</h2>
+    </div>
 
-      <!-- Enlaces de navegación -->
-      <nav class="footer-nav">
-          <a href="/about">Acerca de</a> <a href="/contact">Contacto</a> <a href="/terms">Términos</a> <a
-              href="/privacy">Privacidad</a>
-      </nav>
+    <!-- Enlaces de navegación -->
+    <nav class="footer-nav">
+      <a href="/about">Acerca de</a> <a href="/contact">Contacto</a> <a href="/terms">Términos</a> <a
+        href="/privacy">Privacidad</a>
+    </nav>
 
-      <!-- Redes sociales -->
-      <div class="footer-socials">
-          <a href="https://facebook.com" target="_blank">Facebook</a> <a href="https://twitter.com"
-              target="_blank">Twitter</a> <a href="https://instagram.com" target="_blank">Instagram</a>
-      </div>
+    <!-- Redes sociales -->
+    <div class="footer-socials">
+      <a href="https://facebook.com" target="_blank">Facebook</a> <a href="https://twitter.com"
+        target="_blank">Twitter</a> <a href="https://instagram.com" target="_blank">Instagram</a>
+    </div>
 
-      <!-- Copyright -->
-      <div class="footer-copyright">
-          &copy;
-          <script>document.write(new Date().getFullYear())</script>
-          FilmScore. Todos los derechos reservados.
-      </div>
+    <!-- Copyright -->
+    <div class="footer-copyright">
+      &copy;
+      <script>document.write(new Date().getFullYear())</script>
+      FilmScore. Todos los derechos reservados.
+    </div>
   </div>
 
 
