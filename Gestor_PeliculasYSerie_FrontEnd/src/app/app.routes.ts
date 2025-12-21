@@ -15,25 +15,30 @@ import { MovieDetailComponent } from './features/movies/movie-detail/movie-detai
 import { MoviesPageComponent } from './features/movies/movies-page/movies-page.component';
 import { LoginComponent } from './features/auth/login/login.component';
 import { adminGuard } from './core/admin.guard';
+import { RegisterComponent } from './features/auth/register/register.component';
+import { AccountComponent } from './features/auth/account/account.component';
+import { authGuard } from './core/auth.guard';
 
 
 export const routes: Routes = [
-    { path: 'directores', component: ListaDirectoresComponent },
+    { path: 'directores', component: ListaDirectoresComponent , canActivate: [adminGuard]},
     { path: '', redirectTo: 'directores', pathMatch: 'full' },
     { path: 'registrar-director', component: RegistrarDirectorComponent },
     { path: 'actualizar-director/:id', component: ActualizarDirectorComponent },
     { path: 'empleado-detalles/:id', component: ActualizarDirectorComponent },
-    { path: 'generos', component: ListaGenerosComponent },
+    { path: 'generos', component: ListaGenerosComponent , canActivate: [adminGuard]},
     { path: 'registrar-genero', component: RegistrarGenerosComponent },
     { path: 'actualizar-genero/:id', component: ActualizarGenerosComponent },
     { path: 'genero-detalles/:id', component: ActualizarGenerosComponent },
-    { path: 'peliculas', component: ListaMoviesComponent },
+    { path: 'peliculas', component: ListaMoviesComponent , canActivate: [adminGuard]},
     { path: 'registrar-pelicula', component: RegistrarMoviesComponent },
     { path: 'actualizar-pelicula/:id', component: ActualizarMoviesComponent },
     { path: 'pelicula-detalles/:id', component: ActualizarMoviesComponent },
-    { path: 'tmdb-import', component: TmdbImportComponent },
+    { path: 'tmdb-import', component: TmdbImportComponent , canActivate: [adminGuard]},
     { path: 'movies/:id', component: MovieDetailComponent },
     { path: 'movies', component: MoviesPageComponent },
     { path: 'login', component: LoginComponent },
+    { path: 'register', component: RegisterComponent },
+    { path: 'account', component: AccountComponent, canActivate: [authGuard] },
     { path: 'Home', component: IndexComponent }
 ];

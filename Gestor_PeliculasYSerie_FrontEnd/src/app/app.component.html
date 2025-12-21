@@ -45,11 +45,12 @@
     <li *ngIf="!isLoggedIn">
       <button routerLink="/login" class="botonNav2">Mi cuenta</button>
     </li>
+    <li *ngIf="!isLoggedIn">
+      <button routerLink="/register" class="botonNav2">Registrarse</button>
+    </li>
 
     <li *ngIf="isLoggedIn">
-      <button class="botonNav2" (click)="logout()">
-        Cerrar sesión ({{ displayName }})
-      </button>
+      <button routerLink="/account" class="botonNav2">Mi cuenta ({{ displayName }})</button>
     </li>
   </ul>
 

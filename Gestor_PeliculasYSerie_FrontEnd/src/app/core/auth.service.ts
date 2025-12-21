@@ -3,7 +3,7 @@ import { Injectable, Inject, PLATFORM_ID } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { BehaviorSubject, Observable, tap } from 'rxjs';
 import { isPlatformBrowser } from '@angular/common';
-import { AuthResponse, LoginRequest, UserInfo } from './auth.models';
+import { AuthResponse, LoginRequest, RegisterRequest, UserInfo } from './auth.models';
 
 @Injectable({ providedIn: 'root' })
 export class AuthService {
@@ -64,6 +64,10 @@ export class AuthService {
     return this.getUser()?.role === 'ADMIN';
   }
 
+  register(req: RegisterRequest) {
+    return this.http.post<void>(`${this.baseUrl}/auth/register`, req);
+  }
+
   // Opcional: validar token al arrancar
   loadMe(): Observable<UserInfo> {
     return this.http.get<UserInfo>(`${this.baseUrl}/auth/me`).pipe(
@@ -96,4 +100,6 @@ export class AuthService {
       return null;
     }
   }
+
+
 }

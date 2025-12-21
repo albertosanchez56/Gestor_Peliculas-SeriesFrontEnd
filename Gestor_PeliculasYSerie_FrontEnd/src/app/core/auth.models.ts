@@ -17,3 +17,10 @@ export interface LoginRequest {
   login: string;    // username o email
   password: string;
 }
+
+export interface RegisterRequest {
+  username: string;
+  email: string;
+  password: string;
+  displayName?: string;
+}
