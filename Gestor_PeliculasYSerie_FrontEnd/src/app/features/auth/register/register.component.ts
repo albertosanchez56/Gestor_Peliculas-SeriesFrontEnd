@@ -1,9 +1,16 @@
 import { CommonModule } from '@angular/common';
 import { Component } from '@angular/core';
-import { FormControl, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
+import { AbstractControl, FormControl, FormGroup, FormsModule, ReactiveFormsModule, ValidationErrors, Validators } from '@angular/forms';
 import { Router, RouterModule } from '@angular/router';
 import { AuthService } from '../../../core/auth.service';
 
+
+function passwordsMatch(group: AbstractControl): ValidationErrors | null {
+  const pass = group.get('password')?.value;
+  const confirm = group.get('confirmPassword')?.value;
+  if (!pass || !confirm) return null;
+  return pass === confirm ? null : { passwordMismatch: true };
+}
 
 @Component({
   standalone: true,
@@ -17,40 +24,72 @@ export class RegisterComponent {
   error = '';
   ok = '';
 
-  form = new FormGroup({
-    username: new FormControl('', { nonNullable: true, validators: [Validators.required, Validators.minLength(3)] }),
-    email: new FormControl('', { nonNullable: true, validators: [Validators.required, Validators.email] }),
-    password: new FormControl('', { nonNullable: true, validators: [Validators.required, Validators.minLength(6)] }),
-    displayName: new FormControl('', { nonNullable: true, validators: [Validators.required, Validators.minLength(3)] }),
-  });
+  form = new FormGroup(
+    {
+      displayName: new FormControl('', {
+        nonNullable: true,
+        validators: [Validators.required, Validators.minLength(2)]
+      }),
+      username: new FormControl('', {
+        nonNullable: true,
+        validators: [Validators.required, Validators.minLength(3)]
+      }),
+      email: new FormControl('', {
+        nonNullable: true,
+        validators: [Validators.required, Validators.email]
+      }),
+      password: new FormControl('', {
+        nonNullable: true,
+        validators: [Validators.required, Validators.minLength(8)]
+      }),
+      confirmPassword: new FormControl('', {
+        nonNullable: true,
+        validators: [Validators.required, Validators.minLength(6)]
+      })
+    },
+    { validators: [passwordsMatch] }
+  );
 
   constructor(private auth: AuthService, private router: Router) {}
 
+  // helpers para template
+  get f() { return this.form.controls; }
+  touchedInvalid(name: keyof typeof this.form.controls) {
+    const c = this.form.controls[name];
+    return c.touched && c.invalid;
+  }
+  get passwordMismatch(): boolean {
+    return this.form.touched && !!this.form.errors?.['passwordMismatch'];
+  }
+
   submit(): void {
-  if (this.form.invalid || this.loading) return;
-
-  this.error = '';
-  this.ok = '';
-  this.loading = true;
-
-  const username = this.form.value.username!;
-  const dto = {
-  username: this.form.value.username!,
-  email: this.form.value.email!,
-  displayName: this.form.value.displayName!,
-  password: this.form.value.password!
-};
-
-  this.auth.register(dto).subscribe({
-    next: () => {
-      this.loading = false;
-      this.ok = 'Cuenta creada. Ya puedes iniciar sesión.';
-      setTimeout(() => this.router.navigate(['/login']), 700);
-    },
-    error: (err) => {
-      this.loading = false;
-      this.error = err?.error?.message ?? 'No se pudo registrar.';
+    if (this.form.invalid || this.loading) {
+      this.form.markAllAsTouched();
+      return;
     }
-  });
-}
+
+    this.error = '';
+    this.ok = '';
+    this.loading = true;
+
+    const dto = {
+      displayName: this.f.displayName.value.trim(),
+      username: this.f.username.value.trim(),
+      email: this.f.email.value.trim(),
+      password: this.f.password.value
+    };
+
+    this.auth.register(dto).subscribe({
+      next: () => {
+        this.loading = false;
+        this.ok = 'Cuenta creada. Ya puedes iniciar sesión.';
+        this.form.reset();
+        setTimeout(() => this.router.navigate(['/login']), 700);
+      },
+      error: (err) => {
+        this.loading = false;
+        this.error = err?.error?.message ?? 'No se pudo registrar.';
+      }
+    });
+  }
 }
