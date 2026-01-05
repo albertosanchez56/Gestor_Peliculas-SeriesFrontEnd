@@ -7,3 +7,14 @@ export class Users {
   avatarUrl: string;
   createdAt: string;  // mejor usar string para fechas (ISO-8601), ya lo puedes parsear luego
 }
+
+export interface UserDTO {
+  id: number;
+  username: string;
+  email: string;
+  displayName: string;
+  role: 'ADMIN' | 'USER';
+  status: 'ACTIVE' | 'BANNED';
+  createdAt?: string;
+  updatedAt?: string;
+}

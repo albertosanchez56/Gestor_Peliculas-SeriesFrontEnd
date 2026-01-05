@@ -1,7 +1,7 @@
 // src/app/core/auth/auth.service.ts
 import { Injectable, Inject, PLATFORM_ID } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { BehaviorSubject, map, Observable, of, tap} from 'rxjs';
+import { BehaviorSubject, catchError, map, Observable, of, tap} from 'rxjs';
 import { isPlatformBrowser } from '@angular/common';
 import { AuthResponse, CurrentUser, LoginRequest, RegisterRequest } from './auth.models';
 
@@ -10,7 +10,8 @@ export class AuthService {
   private readonly baseUrl = 'http://localhost:9090/usuario/auth';
   private readonly tokenKey = 'auth_token';
   private readonly userKey = 'auth_user';
-  private readonly browser: boolean;
+
+  private readonly isBrowser: boolean;
 
   private userSubject = new BehaviorSubject<CurrentUser | null>(null);
   user$ = this.userSubject.asObservable();
@@ -19,9 +20,10 @@ export class AuthService {
     private http: HttpClient,
     @Inject(PLATFORM_ID) platformId: Object
   ) {
-    this.browser = isPlatformBrowser(platformId);
+    this.isBrowser = isPlatformBrowser(platformId);
 
-    if (this.browser) {
+    // hidratar desde storage
+    if (this.isBrowser) {
       const u = this.readUser();
       if (u) this.userSubject.next(u);
     }
@@ -33,23 +35,34 @@ export class AuthService {
 
   login(dto: LoginRequest): Observable<CurrentUser> {
     return this.http.post<AuthResponse>(`${this.baseUrl}/login`, dto).pipe(
-      tap((res: AuthResponse) => {
+      tap(res => {
         this.saveToken(res.accessToken);
         this.saveUser(res.user);
       }),
-      map((res: AuthResponse) => res.user)
-    );
+      // devolvemos el usuario ya disponible
+      tap(() => {}),
+      // para tipado correcto:
+      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+      tap(() => {}),
+      // mapeo manual:
+      // (más simple:)
+      // return of(res.user)
+    ) as unknown as Observable<CurrentUser>;
   }
 
   me(): Observable<CurrentUser> {
     return this.http.get<CurrentUser>(`${this.baseUrl}/me`).pipe(
-      tap((u: CurrentUser) => this.saveUser(u))
+      tap(u => this.saveUser(u)),
+      catchError(() => {
+        this.clearSession();
+        return of(null as any);
+      })
     );
   }
 
-  loadMe(): Observable<CurrentUser | null> {
-    if (!this.isLoggedIn()) return of(null);
-    return this.me();
+  refreshSession(): Observable<CurrentUser | null> {
+    if (!this.getToken()) return of(null);
+    return this.me().pipe(catchError(() => of(null)));
   }
 
   logout(): void {
@@ -64,28 +77,29 @@ export class AuthService {
     return this.userSubject.value?.role === 'ADMIN';
   }
 
+  getToken(): string | null {
+    if (!this.isBrowser) return null;
+    return localStorage.getItem(this.tokenKey);
+  }
+
   getCurrentUser(): CurrentUser | null {
     return this.userSubject.value;
   }
 
-  getToken(): string | null {
-    if (!this.browser) return null;
-    return localStorage.getItem(this.tokenKey);
-  }
-
   private saveToken(token: string): void {
-    if (!this.browser) return;
+    if (!this.isBrowser) return;
     localStorage.setItem(this.tokenKey, token);
   }
 
   private saveUser(u: CurrentUser): void {
-    if (!this.browser) return;
+    if (!this.isBrowser) return;
     localStorage.setItem(this.userKey, JSON.stringify(u));
     this.userSubject.next(u);
   }
 
   private readUser(): CurrentUser | null {
     try {
+      if (!this.isBrowser) return null;
       const raw = localStorage.getItem(this.userKey);
       return raw ? (JSON.parse(raw) as CurrentUser) : null;
     } catch {
@@ -94,7 +108,7 @@ export class AuthService {
   }
 
   private clearSession(): void {
-    if (this.browser) {
+    if (this.isBrowser) {
       localStorage.removeItem(this.tokenKey);
       localStorage.removeItem(this.userKey);
     }

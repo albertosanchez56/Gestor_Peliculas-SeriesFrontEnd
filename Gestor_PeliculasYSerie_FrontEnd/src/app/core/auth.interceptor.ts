@@ -8,11 +8,11 @@ export const authInterceptor: HttpInterceptorFn = (req, next) => {
   const platformId = inject(PLATFORM_ID);
   if (!isPlatformBrowser(platformId)) return next(req);
 
-  const token = localStorage.getItem('auth_token');
+  const auth = inject(AuthService);
+  const token = auth.getToken();
   if (!token) return next(req);
 
   return next(req.clone({
     setHeaders: { Authorization: `Bearer ${token}` }
   }));
 };
-

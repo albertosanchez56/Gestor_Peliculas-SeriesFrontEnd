@@ -21,24 +21,35 @@ import { authGuard } from './core/auth.guard';
 
 
 export const routes: Routes = [
-    { path: 'directores', component: ListaDirectoresComponent , canActivate: [adminGuard]},
-    { path: '', redirectTo: 'directores', pathMatch: 'full' },
+    { path: 'directores', component: ListaDirectoresComponent, canActivate: [adminGuard] },
+    { path: '', redirectTo: 'Home', pathMatch: 'full' },
     { path: 'registrar-director', component: RegistrarDirectorComponent },
     { path: 'actualizar-director/:id', component: ActualizarDirectorComponent },
     { path: 'empleado-detalles/:id', component: ActualizarDirectorComponent },
-    { path: 'generos', component: ListaGenerosComponent , canActivate: [adminGuard]},
+    { path: 'generos', component: ListaGenerosComponent, canActivate: [adminGuard] },
     { path: 'registrar-genero', component: RegistrarGenerosComponent },
     { path: 'actualizar-genero/:id', component: ActualizarGenerosComponent },
     { path: 'genero-detalles/:id', component: ActualizarGenerosComponent },
-    { path: 'peliculas', component: ListaMoviesComponent , canActivate: [adminGuard]},
+    { path: 'peliculas', component: ListaMoviesComponent, canActivate: [adminGuard] },
     { path: 'registrar-pelicula', component: RegistrarMoviesComponent },
     { path: 'actualizar-pelicula/:id', component: ActualizarMoviesComponent },
     { path: 'pelicula-detalles/:id', component: ActualizarMoviesComponent },
-    { path: 'tmdb-import', component: TmdbImportComponent , canActivate: [adminGuard]},
+    { path: 'tmdb-import', component: TmdbImportComponent, canActivate: [adminGuard] },
     { path: 'movies/:id', component: MovieDetailComponent },
     { path: 'movies', component: MoviesPageComponent },
     { path: 'login', component: LoginComponent },
     { path: 'register', component: RegisterComponent },
-    { path: 'account', component: AccountComponent, canActivate: [authGuard] },
-    { path: 'Home', component: IndexComponent }
+    {
+        path: 'account',
+        loadComponent: () => import('./features/auth/account/account.component').then(m => m.AccountComponent),
+        canActivate: [authGuard]
+    },
+    {
+        path: 'users',
+        loadComponent: () => import('./features/users/lista-users/lista-users.component')
+            .then(m => m.ListaUsersComponent),
+        canActivate: [adminGuard]
+    },
+    { path: 'Home', component: IndexComponent },
+    { path: '**', redirectTo: 'Home' }
 ];

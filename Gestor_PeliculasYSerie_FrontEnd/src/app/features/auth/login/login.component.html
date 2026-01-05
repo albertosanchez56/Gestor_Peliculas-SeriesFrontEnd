@@ -1,6 +1,6 @@
 <br>
 <div class="auth-box">
-  
+
 
   <form [formGroup]="form" (ngSubmit)="submit()">
     <h2>Iniciar sesión</h2>
@@ -11,14 +11,16 @@
     <input formControlName="password" type="password" placeholder="••••••••" />
 
     <button type="submit" [disabled]="loading">Entrar</button>
+
+    <p class="error" *ngIf="error">{{ error }}</p>
+
+    <p class="link">
+      ¿No tienes cuenta?
+      <a routerLink="/register">Regístrate</a>
+    </p>
   </form>
 
-  <p class="error" *ngIf="error">{{ error }}</p>
 
-  <p class="link">
-    ¿No tienes cuenta?
-    <a routerLink="/register">Regístrate</a>
-  </p>
 </div>
 
 <br>

@@ -1,0 +1,18 @@
+<div class="auth-box">
+  <h2>Mi cuenta</h2>
+
+  <ng-container *ngIf="auth.getCurrentUser() as u; else noUser">
+    <p><b>ID:</b> {{ u.id }}</p>
+    <p><b>Usuario:</b> {{ u.username }}</p>
+    <p><b>Nombre:</b> {{ u.displayName }}</p>
+    <p *ngIf="u.email"><b>Email:</b> {{ u.email }}</p>
+    <p><b>Rol:</b> {{ u.role }}</p>
+
+    <button type="button" (click)="logout()">Cerrar sesión</button>
+  </ng-container>
+
+  <ng-template #noUser>
+    <p>No hay sesión activa.</p>
+    <button type="button" routerLink="/login">Ir a login</button>
+  </ng-template>
+</div>

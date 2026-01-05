@@ -55,7 +55,10 @@ export class AppComponent {
       this.displayName = user?.displayName ?? user?.username ?? '';
     });
 
-    this.auth.loadMe().subscribe();
+    // si hay token, intentar traer /me y actualizar user
+    if (this.auth.isLoggedIn()) {
+      this.auth.refreshSession().subscribe();
+    }
 
   }
 
