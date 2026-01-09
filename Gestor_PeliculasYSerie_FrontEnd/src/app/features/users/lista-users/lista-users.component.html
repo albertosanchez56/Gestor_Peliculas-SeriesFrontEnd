@@ -1,9 +1,6 @@
 <div class="table-container">
   <h2>Lista Usuarios</h2>
 
-  <!-- Si luego quieres botón de acciones, ya tienes el estilo -->
-  <!-- <button class="action-btn add-btn" (click)="crearUsuario()">Agregar</button> -->
-
   <div *ngIf="loading" class="info-row">Cargando...</div>
   <div *ngIf="error" class="alert-danger">{{ error }}</div>
 
@@ -30,11 +27,26 @@
         <td>{{ u.status }}</td>
 
         <td>
-          <!-- placeholders (por si luego haces editar/bloquear) -->
-          <button  class="action-btn edit-btn">Editar</button>
-          <button  class="action-btn delete-btn">Borrar</button>
+          <!-- BAN / UNBAN -->
+          <button
+            class="action-btn delete-btn"
+            type="button"
+            (click)="toggleStatus(u)"
+            [disabled]="rowBusy[u.id]">
+            {{ u.status === 'BANNED' ? 'Unban' : 'Ban' }}
+          </button>
+
+          <!-- CAMBIAR ROL -->
+          <button
+            class="action-btn add-btn"
+            type="button"
+            (click)="toggleRole(u)"
+            [disabled]="rowBusy[u.id]">
+            {{ u.role === 'ADMIN' ? 'Hacer USER' : 'Hacer ADMIN' }}
+          </button>
         </td>
       </tr>
     </tbody>
   </table>
 </div>
+

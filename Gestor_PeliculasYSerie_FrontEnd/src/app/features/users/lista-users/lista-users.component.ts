@@ -12,11 +12,12 @@ import { UsersService } from '../service/users.service';
   styleUrl: './lista-users.component.css'
 })
 export class ListaUsersComponent implements OnInit {
+  users: UserDTO[] = [];
   loading = false;
   error = '';
-  users: UserDTO[] = [];
+  rowBusy: Record<number, boolean> = {};
 
-  constructor(private usersSvc: UsersService) {}
+  constructor(private usersSvc: UsersService) { }
 
   ngOnInit(): void {
     this.load();
@@ -26,20 +27,52 @@ export class ListaUsersComponent implements OnInit {
     this.loading = true;
     this.error = '';
 
-    this.usersSvc.getAll().subscribe({
+    this.usersSvc.list().subscribe({
       next: (rows) => {
         this.users = rows ?? [];
         this.loading = false;
       },
       error: (err) => {
         this.loading = false;
-        // si backend devuelve 403/401:
-        this.error = err?.status === 403
-          ? 'No tienes permisos (solo ADMIN).'
-          : err?.status === 401
-            ? 'No has iniciado sesión.'
-            : 'No se pudieron cargar los usuarios.';
+        this.error = err?.error?.message ?? 'No se pudieron cargar los usuarios.';
       }
     });
   }
+
+  toggleStatus(u: any) {
+  const id = u.id as number;
+  const nextStatus = u.status === 'BANNED' ? 'ACTIVE' : 'BANNED';
+
+  this.rowBusy[id] = true;
+  this.usersSvc.updateStatus(id, nextStatus).subscribe({
+    next: (updated) => {
+      u.status = updated.status; // o nextStatus si tu backend no devuelve dto
+      this.rowBusy[id] = false;
+    },
+    error: () => {
+      this.error = 'No se pudo cambiar el estado.';
+      this.rowBusy[id] = false;
+    }
+  });
+}
+
+toggleRole(u: any) {
+  const id = u.id as number;
+  const nextRole = u.role === 'ADMIN' ? 'USER' : 'ADMIN';
+
+  this.rowBusy[id] = true;
+  this.usersSvc.updateRole(id, nextRole).subscribe({
+    next: (updated) => {
+      u.role = updated.role;
+      this.rowBusy[id] = false;
+    },
+    error: () => {
+      this.error = 'No se pudo cambiar el rol.';
+      this.rowBusy[id] = false;
+    }
+  });
+}
+
+  
+
 }

@@ -5,11 +5,11 @@ import { Observable } from 'rxjs';
 
 @Injectable({ providedIn: 'root' })
 export class UsersService {
-  private readonly baseUrl = 'http://localhost:9090/usuario';
+  private readonly baseUrl = 'http://localhost:9090/usuario/admin/users';
 
-  constructor(private http: HttpClient) {}
+  constructor(private http: HttpClient) { }
 
-  getAll(): Observable<UserDTO[]> {
+  list(): Observable<UserDTO[]> {
     return this.http.get<UserDTO[]>(this.baseUrl);
   }
 
@@ -17,8 +17,11 @@ export class UsersService {
     return this.http.get<UserDTO>(`${this.baseUrl}/${id}`);
   }
 
-  // Si luego haces update:
-  // update(id: number, dto: Partial<UserDTO>): Observable<UserDTO> {
-  //   return this.http.put<UserDTO>(`${this.baseUrl}/${id}`, dto);
-  // }
+  updateStatus(id: number, status: 'ACTIVE' | 'BANNED') {
+    return this.http.patch<UserDTO>(`${this.baseUrl}/${id}/status`, { status });
+  }
+
+  updateRole(id: number, role: 'USER' | 'ADMIN') {
+    return this.http.patch<UserDTO>(`${this.baseUrl}/${id}/role`, { role });
+  }
 }
