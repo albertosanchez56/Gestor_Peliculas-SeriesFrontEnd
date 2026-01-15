@@ -17,7 +17,7 @@ export class ListaUsersComponent implements OnInit {
   error = '';
   rowBusy: Record<number, boolean> = {};
 
-  constructor(private usersSvc: UsersService) { }
+  constructor(private usersSvc: UsersService) {}
 
   ngOnInit(): void {
     this.load();
@@ -39,40 +39,45 @@ export class ListaUsersComponent implements OnInit {
     });
   }
 
-  toggleStatus(u: any) {
-  const id = u.id as number;
-  const nextStatus = u.status === 'BANNED' ? 'ACTIVE' : 'BANNED';
+  toggleStatus(u: UserDTO): void {
+    const id = u.id;
+    const nextStatus: 'ACTIVE' | 'BANNED' = (u.status === 'BANNED') ? 'ACTIVE' : 'BANNED';
 
-  this.rowBusy[id] = true;
-  this.usersSvc.updateStatus(id, nextStatus).subscribe({
-    next: (updated) => {
-      u.status = updated.status; // o nextStatus si tu backend no devuelve dto
-      this.rowBusy[id] = false;
-    },
-    error: () => {
-      this.error = 'No se pudo cambiar el estado.';
-      this.rowBusy[id] = false;
-    }
-  });
-}
+    this.rowBusy[id] = true;
+    this.error = '';
 
-toggleRole(u: any) {
-  const id = u.id as number;
-  const nextRole = u.role === 'ADMIN' ? 'USER' : 'ADMIN';
+    this.usersSvc.updateStatus(id, nextStatus).subscribe({
+      next: (updated) => {
+        u.status = updated.status;
+        this.rowBusy[id] = false;
+      },
+      error: (err) => {
+        this.error = err?.error?.message ?? 'No se pudo cambiar el estado.';
+        this.rowBusy[id] = false;
+      }
+    });
+  }
 
-  this.rowBusy[id] = true;
-  this.usersSvc.updateRole(id, nextRole).subscribe({
-    next: (updated) => {
-      u.role = updated.role;
-      this.rowBusy[id] = false;
-    },
-    error: () => {
-      this.error = 'No se pudo cambiar el rol.';
-      this.rowBusy[id] = false;
-    }
-  });
-}
+  toggleRole(u: UserDTO): void {
+    const id = u.id;
+    const nextRole: 'USER' | 'ADMIN' = (u.role === 'ADMIN') ? 'USER' : 'ADMIN';
 
-  
+    this.rowBusy[id] = true;
+    this.error = '';
 
+    this.usersSvc.updateRole(id, nextRole).subscribe({
+      next: (updated) => {
+        u.role = updated.role;
+        this.rowBusy[id] = false;
+      },
+      error: (err) => {
+        this.error = err?.error?.message ?? 'No se pudo cambiar el rol.';
+        this.rowBusy[id] = false;
+      }
+    });
+  }
+
+  busy(u: UserDTO): boolean {
+    return !!this.rowBusy[u.id];
+  }
 }

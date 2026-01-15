@@ -1,7 +1,7 @@
 // src/app/core/auth/auth.service.ts
 import { Injectable, Inject, PLATFORM_ID } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { BehaviorSubject, catchError, map, Observable, of, tap} from 'rxjs';
+import { BehaviorSubject, catchError, map, Observable, of, tap } from 'rxjs';
 import { isPlatformBrowser } from '@angular/common';
 import { AuthResponse, CurrentUser, LoginRequest, RegisterRequest } from './auth.models';
 
@@ -13,7 +13,8 @@ export class AuthService {
 
   private readonly isBrowser: boolean;
 
-  private userSubject = new BehaviorSubject<CurrentUser | null>(null);
+  private userSubject = new BehaviorSubject<CurrentUser | null>(this.readUser());
+
   user$ = this.userSubject.asObservable();
 
   constructor(
@@ -21,12 +22,6 @@ export class AuthService {
     @Inject(PLATFORM_ID) platformId: Object
   ) {
     this.isBrowser = isPlatformBrowser(platformId);
-
-    // hidratar desde storage
-    if (this.isBrowser) {
-      const u = this.readUser();
-      if (u) this.userSubject.next(u);
-    }
   }
 
   register(dto: RegisterRequest): Observable<void> {
@@ -39,16 +34,10 @@ export class AuthService {
         this.saveToken(res.accessToken);
         this.saveUser(res.user);
       }),
-      // devolvemos el usuario ya disponible
-      tap(() => {}),
-      // para tipado correcto:
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      tap(() => {}),
-      // mapeo manual:
-      // (más simple:)
-      // return of(res.user)
-    ) as unknown as Observable<CurrentUser>;
+      map(res => res.user)
+    );
   }
+
 
   me(): Observable<CurrentUser> {
     return this.http.get<CurrentUser>(`${this.baseUrl}/me`).pipe(
@@ -114,4 +103,22 @@ export class AuthService {
     }
     this.userSubject.next(null);
   }
+
+  // ✅ Actualizar perfil (por ahora solo displayName)
+  updateProfile(dto: { displayName?: string | null }): Observable<CurrentUser> {
+    return this.http.patch<CurrentUser>(`${this.baseUrl}/me`, dto).pipe(
+      tap(u => {
+        localStorage.setItem(this.userKey, JSON.stringify(u));
+        this.userSubject.next(u);
+      })
+    );
+  }
+
+
+  // ✅ Cambiar contraseña
+changePassword(dto: { currentPassword?: string | null; newPassword?: string | null }) {
+  return this.http.patch<void>(`${this.baseUrl}/me/password`, dto);
+}
+
+
 }

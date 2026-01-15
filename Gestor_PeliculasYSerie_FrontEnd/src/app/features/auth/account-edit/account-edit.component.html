@@ -1,0 +1,23 @@
+<div class="auth-box">
+  <h2>Editar perfil</h2>
+
+  <form [formGroup]="form" (ngSubmit)="submit()">
+    <label>Nombre visible</label>
+    <input type="text" formControlName="displayName" />
+
+    <div class="error" *ngIf="form.controls.displayName.touched && form.controls.displayName.invalid">
+      El nombre es obligatorio
+    </div>
+
+    <button type="submit" [disabled]="loading">
+      {{ loading ? 'Guardando...' : 'Guardar cambios' }}
+    </button>
+
+    <div class="ok" *ngIf="ok">{{ ok }}</div>
+    <div class="error" *ngIf="error">{{ error }}</div>
+  </form>
+
+  <button routerLink="/account" type="button">
+    Volver
+  </button>
+</div>

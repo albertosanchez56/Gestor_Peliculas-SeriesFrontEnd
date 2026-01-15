@@ -8,7 +8,17 @@
     <p *ngIf="u.email"><b>Email:</b> {{ u.email }}</p>
     <p><b>Rol:</b> {{ u.role }}</p>
 
-    <button type="button" (click)="logout()">Cerrar sesión</button>
+    <button type="button" routerLink="/account/edit">
+      Editar perfil
+    </button>
+
+    <button type="button" routerLink="/account/password">
+      Cambiar contraseña
+    </button>
+
+    <button type="button" (click)="logout()">
+      Cerrar sesión
+    </button>
   </ng-container>
 
   <ng-template #noUser>

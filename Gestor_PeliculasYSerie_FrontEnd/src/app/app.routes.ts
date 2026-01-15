@@ -50,6 +50,28 @@ export const routes: Routes = [
             .then(m => m.ListaUsersComponent),
         canActivate: [adminGuard]
     },
+    {
+        path: 'account',
+        loadComponent: () =>
+            import('./features/auth/account/account.component')
+                .then(m => m.AccountComponent),
+        canActivate: [authGuard]
+    },
+    {
+        path: 'account/edit',
+        loadComponent: () =>
+            import('./features/auth/account-edit/account-edit.component')
+                .then(m => m.AccountEditComponent),
+        canActivate: [authGuard]
+    },
+    {
+        path: 'account/password',
+        loadComponent: () =>
+            import('./features/auth/account-password/account-password.component')
+                .then(m => m.AccountPasswordComponent),
+        canActivate: [authGuard]
+    },
+
     { path: 'Home', component: IndexComponent },
     { path: '**', redirectTo: 'Home' }
 ];
