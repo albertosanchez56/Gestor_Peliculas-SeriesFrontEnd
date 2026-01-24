@@ -1,11 +1,7 @@
 <main *ngIf="movie as mv; else loadingTpl">
   <!-- HERO con imagen de fondo de alta calidad + degradado -->
   <section class="backdrop-hero">
-    <img
-      class="backdrop-img"
-      [src]="backdropSrc(movie)"
-      [srcset]="backdropSrcset(movie)"
-      sizes="100vw"
+    <img class="backdrop-img" [src]="backdropSrc(movie)" [srcset]="backdropSrcset(movie)" sizes="100vw"
       [alt]="'Fondo de ' + (movie?.title || '')" />
 
     <div class="backdrop-fade"></div>
@@ -13,18 +9,13 @@
     <!-- Contenido sobre el hero: póster + tráiler -->
     <div class="hero-content">
       <div class="hero-poster">
-        <img
-          [src]="mv.posterUrl || 'assets/imagenes/placeholder-poster.png'"
-          [alt]="'Póster de ' + mv.title" />
+        <img [src]="mv.posterUrl || 'assets/imagenes/placeholder-poster.png'" [alt]="'Póster de ' + mv.title" />
         <button class="favorite-button" (click)="onToggleFavorite()">+</button>
       </div>
 
       <div class="hero-trailer" *ngIf="trailerEmbed; else noTrailerTpl">
         <div class="video-frame">
-          <iframe
-            [src]="trailerEmbed"
-            title="Trailer"
-            frameborder="0"
+          <iframe [src]="trailerEmbed" title="Trailer" frameborder="0"
             allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
             allowfullscreen>
           </iframe>
@@ -65,9 +56,7 @@
       <div class="cast-grid">
         <div class="cast-card" *ngFor="let c of visibleCast">
           <div class="cast-thumb">
-            <img
-              [src]="c.profileUrl || 'assets/imagenes/placeholder-profile.png'"
-              [alt]="c.personName" />
+            <img [src]="c.profileUrl || 'assets/imagenes/placeholder-profile.png'" [alt]="c.personName" />
           </div>
           <div class="cast-meta">
             <div class="cast-name">{{ c.personName }}</div>
@@ -87,8 +76,73 @@
 
     <section class="user-reviews">
       <h2>Opiniones de Usuarios</h2>
-      <p>Próximamente…</p>
+
+      <!-- Score propio (reviews) + score TMDB (el tuyo ya lo tienes en ratingText) -->
+      <div class="ratings-row">
+        <div class="rating-chip">
+          <strong>TMDB:</strong> {{ ratingText }}
+        </div>
+
+        <div class="rating-chip">
+          <strong>Usuarios:</strong>
+          <ng-container *ngIf="statsData as st; else noStats">
+            {{ st.averageRating !== null ? (st.averageRating | number:'1.1-1') : '—' }}/10
+            ({{ st.count }} opiniones)
+          </ng-container>
+          <ng-template #noStats>—</ng-template>
+        </div>
+      </div>
+
+      <!-- Form crear review (solo si login) -->
+      <div *ngIf="auth.isLoggedIn(); else loginToReview" class="review-form">
+        <h3>Deja tu opinión</h3>
+
+        <label>Puntuación (1-10)</label>
+        <input type="number" min="1" max="10" [(ngModel)]="myRating" />
+
+        <label>Comentario</label>
+        <textarea rows="3" [(ngModel)]="myComment"></textarea>
+
+        <label class="spoilers">
+          <input type="checkbox" [(ngModel)]="mySpoilers" />
+          Contiene spoilers
+        </label>
+        <button (click)="submitReview()" [disabled]="sendingReview">
+
+
+          {{ sendingReview ? 'Enviando…' : 'Publicar' }}
+        </button>
+      </div>
+
+      <ng-template #loginToReview>
+        <p>Inicia sesión para publicar una reseña.</p>
+      </ng-template>
+
+      <hr />
+
+      <!-- Listado -->
+      <div *ngIf="loadingReviews">Cargando reseñas…</div>
+
+      <div *ngIf="!loadingReviews && !reviews.length">
+        <p>Aún no hay reseñas.</p>
+      </div>
+
+      <div class="review-list" *ngIf="!loadingReviews && reviews.length">
+        <article class="review-card" *ngFor="let r of reviews">
+          <div class="review-head">
+            <div class="review-score">{{ r.rating }}/10</div>
+            <div class="review-meta">
+              <span *ngIf="r.edited">Editada</span>
+              <span *ngIf="r.containsSpoilers">⚠ Spoilers</span>
+            </div>
+          </div>
+
+          <p class="review-comment" *ngIf="r.comment">{{ r.comment }}</p>
+          <p class="review-comment" *ngIf="!r.comment"><em>Sin comentario.</em></p>
+        </article>
+      </div>
     </section>
+
   </div>
 </main>
 

@@ -12,16 +12,12 @@ export class AuthService {
   private readonly userKey = 'auth_user';
 
   private readonly isBrowser: boolean;
-
-  private userSubject = new BehaviorSubject<CurrentUser | null>(this.readUser());
-
+  private userSubject = new BehaviorSubject<CurrentUser | null>(null);
   user$ = this.userSubject.asObservable();
 
-  constructor(
-    private http: HttpClient,
-    @Inject(PLATFORM_ID) platformId: Object
-  ) {
+  constructor(private http: HttpClient, @Inject(PLATFORM_ID) platformId: Object) {
     this.isBrowser = isPlatformBrowser(platformId);
+    this.userSubject.next(this.readUser());
   }
 
   register(dto: RegisterRequest): Observable<void> {
@@ -116,9 +112,9 @@ export class AuthService {
 
 
   // ✅ Cambiar contraseña
-changePassword(dto: { currentPassword?: string | null; newPassword?: string | null }) {
-  return this.http.patch<void>(`${this.baseUrl}/me/password`, dto);
-}
+  changePassword(dto: { currentPassword?: string | null; newPassword?: string | null }) {
+    return this.http.patch<void>(`${this.baseUrl}/me/password`, dto);
+  }
 
 
 }

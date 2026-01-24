@@ -238,3 +238,172 @@ hr {
   .cast-grid { grid-template-columns: repeat(2, 1fr); }
   .movie-details-container {margin-top: -750px;}
 }
+
+/* ===== REVIEWS ===== */
+.user-reviews {
+  margin-top: 24px;
+}
+
+.user-reviews h2 {
+  color: #FFA500;
+  margin-bottom: 12px;
+}
+
+/* ---------- Formulario ---------- */
+.review-form {
+  background: #2a2a2a;
+  border-radius: 12px;
+  padding: 16px;
+  margin-bottom: 20px;
+  box-shadow: 0 8px 20px rgba(0,0,0,0.35);
+}
+
+.review-form h3 {
+  margin: 0 0 10px;
+  color: #fff;
+  font-size: 1.1rem;
+}
+
+/* rating */
+.review-rating {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 10px;
+}
+
+.review-rating label {
+  color: #ddd;
+  font-size: .95rem;
+}
+
+.review-rating select {
+  background: #1f1f1f;
+  color: #fff;
+  border: 1px solid #444;
+  border-radius: 6px;
+  padding: 6px 8px;
+}
+
+/* textarea */
+.review-form textarea {
+  width: 100%;
+  min-height: 90px;
+  resize: vertical;
+  background: #1f1f1f;
+  color: #fff;
+  border: 1px solid #444;
+  border-radius: 8px;
+  padding: 10px;
+  margin-bottom: 10px;
+  font-family: inherit;
+}
+
+.review-form textarea::placeholder {
+  color: #999;
+}
+
+/* spoilers */
+.review-spoilers {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: #ccc;
+  font-size: .9rem;
+  margin-bottom: 12px;
+}
+
+.review-spoilers input {
+  accent-color: darkorange;
+}
+
+/* botón */
+.review-form button {
+  background: darkorange;
+  color: #000;
+  border: none;
+  border-radius: 8px;
+  padding: 8px 16px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color .2s ease, opacity .2s ease;
+}
+
+.review-form button:hover {
+  background: orange;
+}
+
+.review-form button:disabled {
+  opacity: .6;
+  cursor: not-allowed;
+}
+
+/* ---------- Lista de reviews ---------- */
+.review-list {
+  display: grid;
+  gap: 14px;
+}
+
+/* card */
+.review-card {
+  background: #2a2a2a;
+  border-radius: 12px;
+  padding: 14px;
+  box-shadow: 0 6px 16px rgba(0,0,0,0.35);
+}
+
+/* header */
+.review-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 6px;
+}
+
+.review-user {
+  color: #fff;
+  font-weight: 600;
+  font-size: .95rem;
+}
+
+.review-rating-badge {
+  background: #111;
+  color: #FFA500;
+  font-weight: 600;
+  padding: 4px 8px;
+  border-radius: 999px;
+  font-size: .85rem;
+}
+
+/* texto */
+.review-comment {
+  color: #ddd;
+  font-size: .95rem;
+  line-height: 1.45;
+  margin-top: 6px;
+}
+
+/* spoilers */
+.review-spoiler {
+  margin-top: 8px;
+  font-size: .85rem;
+  color: #bbb;
+  font-style: italic;
+}
+
+/* footer */
+.review-footer {
+  margin-top: 8px;
+  font-size: .8rem;
+  color: #999;
+  display: flex;
+  justify-content: space-between;
+}
+
+/* estado vacío */
+.review-empty {
+  color: #bbb;
+  font-style: italic;
+  text-align: center;
+  margin-top: 12px;
+}
