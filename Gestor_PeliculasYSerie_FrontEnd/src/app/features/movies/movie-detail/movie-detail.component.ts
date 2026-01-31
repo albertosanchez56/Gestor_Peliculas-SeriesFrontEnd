@@ -1,16 +1,40 @@
-import { CommonModule } from '@angular/common';
-import { Component, OnInit } from '@angular/core';
+import { CommonModule, isPlatformBrowser, DOCUMENT } from '@angular/common';
+import { Component, Inject, OnInit, PLATFORM_ID } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
+import { ViewportScroller } from '@angular/common';
+import { FormsModule } from '@angular/forms';
+import { catchError, of } from 'rxjs';
 
 import { Movies } from '../movies';
 import { CastCredit, MovieService } from '../service/movie.service';
-import { isPlatformBrowser, DOCUMENT } from '@angular/common'
-import { Inject, PLATFORM_ID } from '@angular/core';
-import { ViewportScroller } from '@angular/common';
+
+// Ajusta estos imports a tu estructura real
 import { AuthService } from '../../../core/auth.service';
-import { MovieStatsDTO, ReviewDTO, ReviewService } from '../../review/review.service';
-import { FormsModule } from '@angular/forms';
+import { ReviewService } from '../../review/review.service';
+
+// ✅ Modelos recomendados (si no los tienes, crea interfaces iguales)
+export interface MovieStatsDTO {
+  averageUserRating: number | null;
+  voteCount: number; // o number | null si quieres
+}
+
+
+// ✅ esto debería coincidir con lo que devuelve el back (ReviewViewDTO)
+export interface ReviewViewDTO {
+  id: number;
+  movieId: number;
+  userId: number;
+  displayName: string;
+
+  rating: number;
+  comment?: string | null;
+  containsSpoilers: boolean;
+  edited: boolean;
+
+  createdAt: string; // ISO
+  updatedAt: string; // ISO
+}
 
 @Component({
   selector: 'app-movie-detail',
@@ -28,10 +52,14 @@ export class MovieDetailComponent implements OnInit {
   showAllCast = false;
 
   // Reviews
-  reviews: ReviewDTO[] = [];
+  reviews: ReviewViewDTO[] = [];
   statsData: MovieStatsDTO | null = null;
   loadingReviews = false;
   sendingReview = false;
+
+  // Mi review (para ocultar el formulario si ya existe)
+  myReview: ReviewViewDTO | null = null;
+  loadingMyReview = false;
 
   // Form crear review
   myRating = 8;
@@ -70,17 +98,17 @@ export class MovieDetailComponent implements OnInit {
           // Cast
           this.movieSvc.getCast(m.id).subscribe({
             next: (c) => (this.cast = c ?? []),
-            complete: () => (this.loading = false),
-            error: () => (this.loading = false)
+            error: () => (this.cast = []),
+            complete: () => (this.loading = false)
           });
 
-          // Reviews + stats
+          // Reviews + stats + mi review
           this.loadReviews(m.id);
+          this.loadMyReview(m.id);
 
           // Scroll top
           if (this.isBrowser) {
             this.viewport.scrollToPosition([0, 0]);
-            // o: this.doc.defaultView?.scrollTo({ top: 0, behavior: 'smooth' });
           }
         },
         error: () => (this.loading = false)
@@ -97,15 +125,37 @@ export class MovieDetailComponent implements OnInit {
 
     // stats
     this.reviewSvc.stats(movieId).subscribe({
-      next: (s) => (this.statsData = s),
+      next: (s: MovieStatsDTO) => (this.statsData = s),
       error: () => (this.statsData = null)
     });
 
     // listado
     this.reviewSvc.listByMovie(movieId).subscribe({
-      next: (rows) => (this.reviews = rows ?? []),
+      next: (rows: ReviewViewDTO[]) => (this.reviews = rows ?? []),
       error: () => (this.reviews = []),
       complete: () => (this.loadingReviews = false)
+    });
+  }
+
+  loadMyReview(movieId: number): void {
+    this.myReview = null;
+
+    if (!this.auth.isLoggedIn()) return;
+
+    this.loadingMyReview = true;
+
+    // ✅ endpoint recomendado: GET /reviews/me/movie/{movieId}
+    this.reviewSvc.myReviewForMovie(movieId).pipe(
+      catchError(() => of(null))
+    ).subscribe({
+      next: (r: any) => {
+        this.myReview = r;
+        this.loadingMyReview = false;
+      },
+      error: () => {
+        this.myReview = null;
+        this.loadingMyReview = false;
+      }
     });
   }
 
@@ -113,21 +163,29 @@ export class MovieDetailComponent implements OnInit {
     const mv = this.movie;
     if (!mv) return;
     if (!this.auth.isLoggedIn()) return;
+    if (this.myReview) return; // ✅ si ya hay review, no permitir
+
+    const rating = Number(this.myRating);
+    if (!Number.isFinite(rating) || rating < 1 || rating > 10) return;
 
     this.sendingReview = true;
 
     this.reviewSvc.create({
       movieId: mv.id,
-      rating: this.myRating,
-      comment: this.myComment?.trim() || null,
+      rating,
+      comment: this.myComment?.trim() || undefined,
+
       containsSpoilers: this.mySpoilers
     }).subscribe({
       next: () => {
         // reset form
         this.myComment = '';
         this.mySpoilers = false;
-        // refrescar
+
+        // refrescar stats/listado + mi review
         this.loadReviews(mv.id);
+        this.loadMyReview(mv.id);
+
         this.sendingReview = false;
       },
       error: () => {
@@ -161,20 +219,9 @@ export class MovieDetailComponent implements OnInit {
     return (this.movie?.genres ?? []).map(g => g.name).join(', ');
   }
 
-  /** TMDB / rating actual que ya tenías */
   get ratingText(): string {
     const r = this.movie?.averageRating;
     return typeof r === 'number' ? `⭐ ${r.toFixed(1)}/10` : '—';
-  }
-
-  /** Rating de usuarios (reviews) */
-  get userRatingText(): string {
-    const st = this.statsData;
-    if (!st) return '—';
-    const avg = st.averageRating;
-    const count = st.count ?? 0;
-    const avgText = (avg === null || avg === undefined) ? '—' : `${Number(avg).toFixed(1)}/10`;
-    return `${avgText} (${count} opiniones)`;
   }
 
   get trailerEmbed(): SafeResourceUrl | null {

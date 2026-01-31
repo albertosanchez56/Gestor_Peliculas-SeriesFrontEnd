@@ -15,10 +15,26 @@ export interface ReviewDTO {
   updatedAt: string;
 }
 
-export interface MovieStatsDTO {
-  averageRating: number | null; // tu back puede devolver null si no hay reviews
-  count: number;
+export interface ReviewViewDTO {
+  id: number;
+  movieId: number;
+  userId: number;
+  displayName: string;
+  rating: number;
+  comment?: string;
+  containsSpoilers: boolean;
+  edited: boolean;
+  createdAt: string;   // ISO
+  updatedAt: string;
 }
+
+
+
+export interface MovieStatsDTO {
+  averageUserRating: number | null;
+  voteCount: number;
+}
+
 
 export interface CreateReviewRequest {
   movieId: number;
@@ -40,20 +56,10 @@ export class ReviewService {
 
   constructor(private http: HttpClient) {}
 
-  listByMovie(movieId: number): Observable<ReviewDTO[]> {
-    return this.http.get<ReviewDTO[]>(`${this.baseUrl}/movie/${movieId}`);
-  }
-
-  stats(movieId: number): Observable<MovieStatsDTO> {
-    return this.http.get<MovieStatsDTO>(`${this.baseUrl}/movie/${movieId}/stats`);
-  }
+  
 
   myReviews(): Observable<ReviewDTO[]> {
     return this.http.get<ReviewDTO[]>(`${this.baseUrl}/me`);
-  }
-
-  create(dto: CreateReviewRequest): Observable<ReviewDTO> {
-    return this.http.post<ReviewDTO>(`${this.baseUrl}`, dto);
   }
 
   update(reviewId: number, dto: UpdateReviewRequest): Observable<ReviewDTO> {
@@ -62,5 +68,23 @@ export class ReviewService {
 
   delete(reviewId: number): Observable<void> {
     return this.http.delete<void>(`${this.baseUrl}/${reviewId}`);
+  }
+
+  listByMovie(movieId: number) {
+  return this.http.get<ReviewViewDTO[]>(`${this.baseUrl}/movie/${movieId}/view`);
+}
+
+
+  stats(movieId: number): Observable<MovieStatsDTO> {
+    return this.http.get<MovieStatsDTO>(`${this.baseUrl}/movie/${movieId}/stats`);
+  }
+
+  // ✅ para saber si ya tengo review de esa peli
+  myReviewForMovie(movieId: number): Observable<ReviewViewDTO> {
+    return this.http.get<ReviewViewDTO>(`${this.baseUrl}/me/movie/${movieId}`);
+  }
+
+  create(body: { movieId: number; rating: number; comment?: string; containsSpoilers: boolean }) {
+    return this.http.post(`${this.baseUrl}`, body);
   }
 }

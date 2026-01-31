@@ -1,12 +1,11 @@
 <main *ngIf="movie as mv; else loadingTpl">
-  <!-- HERO con imagen de fondo de alta calidad + degradado -->
+  <!-- HERO -->
   <section class="backdrop-hero">
     <img class="backdrop-img" [src]="backdropSrc(movie)" [srcset]="backdropSrcset(movie)" sizes="100vw"
       [alt]="'Fondo de ' + (movie?.title || '')" />
 
     <div class="backdrop-fade"></div>
 
-    <!-- Contenido sobre el hero: póster + tráiler -->
     <div class="hero-content">
       <div class="hero-poster">
         <img [src]="mv.posterUrl || 'assets/imagenes/placeholder-poster.png'" [alt]="'Póster de ' + mv.title" />
@@ -21,6 +20,7 @@
           </iframe>
         </div>
       </div>
+
       <ng-template #noTrailerTpl>
         <div class="hero-trailer no-trailer">
           <p>No hay tráiler disponible.</p>
@@ -29,7 +29,7 @@
     </div>
   </section>
 
-  <!-- Bloque de datos -->
+  <!-- DETAILS -->
   <div class="movie-details-container">
     <header class="movie-header">
       <h1 class="movie-title">{{ mv.title }}</h1>
@@ -38,18 +38,18 @@
 
     <div class="movie-info-block">
       <p *ngIf="mv.genres?.length"><strong>Género:</strong> {{ genreList }}</p>
-      <hr *ngIf="mv.genres?.length">
+      <hr *ngIf="mv.genres?.length" />
 
       <p><strong>Sinopsis:</strong> {{ mv.description || 'No disponible.' }}</p>
-      <hr>
+      <hr />
 
       <p *ngIf="mv?.director?.name as dName">
         <strong>Director:</strong> {{ dName }}
       </p>
-      <hr>
+      <hr />
     </div>
 
-    <!-- Reparto -->
+    <!-- CAST -->
     <section *ngIf="cast.length" class="cast-section">
       <h2 class="cast-title">Reparto principal</h2>
 
@@ -72,12 +72,13 @@
       </div>
     </section>
 
-    <hr>
+    <hr />
 
+    <!-- REVIEWS -->
     <section class="user-reviews">
       <h2>Opiniones de Usuarios</h2>
 
-      <!-- Score propio (reviews) + score TMDB (el tuyo ya lo tienes en ratingText) -->
+      <!-- Scores -->
       <div class="ratings-row">
         <div class="rating-chip">
           <strong>TMDB:</strong> {{ ratingText }}
@@ -86,33 +87,62 @@
         <div class="rating-chip">
           <strong>Usuarios:</strong>
           <ng-container *ngIf="statsData as st; else noStats">
-            {{ st.averageRating !== null ? (st.averageRating | number:'1.1-1') : '—' }}/10
-            ({{ st.count }} opiniones)
+            {{ st.averageUserRating !== null ? (st.averageUserRating | number:'1.1-1') : '—' }}/10
+            ({{ st.voteCount }} opiniones)
+
           </ng-container>
           <ng-template #noStats>—</ng-template>
         </div>
       </div>
 
-      <!-- Form crear review (solo si login) -->
-      <div *ngIf="auth.isLoggedIn(); else loginToReview" class="review-form">
-        <h3>Deja tu opinión</h3>
+      <!-- Form / estado -->
+      <ng-container *ngIf="auth.isLoggedIn(); else loginToReview">
+        <!-- ✅ si ya tengo review -->
+        <div *ngIf="myReview; else canCreate" class="review-form">
+          <h3>Tu reseña</h3>
 
-        <label>Puntuación (1-10)</label>
-        <input type="number" min="1" max="10" [(ngModel)]="myRating" />
+          <div class="my-review-line">
+            <strong>Puntuación:</strong> {{ myReview.rating }}/10
+          </div>
 
-        <label>Comentario</label>
-        <textarea rows="3" [(ngModel)]="myComment"></textarea>
+          <div class="my-review-line">
+            <strong>Fecha:</strong> {{ myReview.createdAt | date:'dd/MM/yyyy HH:mm' }}
+            <span *ngIf="myReview.edited"> · Editada</span>
+          </div>
 
-        <label class="spoilers">
-          <input type="checkbox" [(ngModel)]="mySpoilers" />
-          Contiene spoilers
-        </label>
-        <button (click)="submitReview()" [disabled]="sendingReview">
+          <div class="my-review-line" *ngIf="myReview.containsSpoilers">
+            ⚠ Contiene spoilers
+          </div>
 
+          <p class="review-comment" *ngIf="myReview.comment">{{ myReview.comment }}</p>
+          <p class="review-comment" *ngIf="!myReview.comment"><em>Sin comentario.</em></p>
 
-          {{ sendingReview ? 'Enviando…' : 'Publicar' }}
-        </button>
-      </div>
+          <!-- luego añadiremos editar/borrar -->
+        </div>
+
+        <!-- ✅ puedo crear -->
+        <ng-template #canCreate>
+          <div class="review-form">
+            <h3>Deja tu opinión</h3>
+
+            <label>Puntuación (1-10)</label>
+            <input type="number" min="1" max="10" [(ngModel)]="myRating" />
+
+            <label>Comentario</label>
+            <textarea rows="3" [(ngModel)]="myComment"></textarea>
+
+            <label class="spoilers">
+              <input type="checkbox" [(ngModel)]="mySpoilers" />
+              Contiene spoilers
+            </label>
+
+            <!-- ✅ arreglado: submitReview() sin argumentos -->
+            <button (click)="submitReview()" [disabled]="sendingReview">
+              {{ sendingReview ? 'Enviando…' : 'Publicar' }}
+            </button>
+          </div>
+        </ng-template>
+      </ng-container>
 
       <ng-template #loginToReview>
         <p>Inicia sesión para publicar una reseña.</p>
@@ -131,18 +161,22 @@
         <article class="review-card" *ngFor="let r of reviews">
           <div class="review-head">
             <div class="review-score">{{ r.rating }}/10</div>
+
             <div class="review-meta">
+              <div class="review-author">{{ r.displayName }}</div>
+              <div class="review-date">{{ r.createdAt | date:'dd/MM/yyyy HH:mm' }}</div>
+
               <span *ngIf="r.edited">Editada</span>
               <span *ngIf="r.containsSpoilers">⚠ Spoilers</span>
             </div>
           </div>
+
 
           <p class="review-comment" *ngIf="r.comment">{{ r.comment }}</p>
           <p class="review-comment" *ngIf="!r.comment"><em>Sin comentario.</em></p>
         </article>
       </div>
     </section>
-
   </div>
 </main>
 
