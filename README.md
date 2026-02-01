@@ -1,59 +1,249 @@
-# 🎬 Gestor de Películas y Series – Frontend
+# FilmScore — Frontend
 
-Frontend del proyecto **Gestor de Películas y Series**, desarrollado en **Angular**, que consume APIs REST creadas con **Spring Boot (backend)**.  
+> SPA desarrollada en Angular para gestión de películas, usuarios y reseñas. Consume la API REST del backend de microservicios (Spring Boot) a través del API Gateway.
 
-El objetivo del proyecto es gestionar usuarios, películas y reseñas, mostrando cómo integrar un **frontend moderno con un backend basado en microservicios**.
-
----
-
-## 🚀 Tecnologías utilizadas
-- Angular (última versión)
-- TypeScript
-- HTML5, CSS3, Bootstrap 5
-- Consumo de APIs REST con HttpClient
-- GitHub
+[![Angular 19](https://img.shields.io/badge/Angular-19-DD0031?logo=angular)](https://angular.io/)
+[![TypeScript 5.6](https://img.shields.io/badge/TypeScript-5.6-3178C6?logo=typescript)](https://www.typescriptlang.org/)
+[![RxJS 7](https://img.shields.io/badge/RxJS-7-B7178C)](https://rxjs.dev/)
 
 ---
 
-## 📌 Funcionalidades implementadas
-- Visualización de películas y detalles
-- Gestión de usuarios y favoritos
-- Listado por géneros y directores
-- Integración con el backend mediante llamadas REST
+## Arquitectura
+
+```
+┌─────────────────────────────────────────────────────────────────────────┐
+│                         FilmScore Frontend (Angular)                     │
+├─────────────────────────────────────────────────────────────────────────┤
+│                                                                         │
+│   ┌─────────────┐    ┌─────────────┐    ┌─────────────┐                │
+│   │   Router    │    │   Guards    │    │ Interceptor │                │
+│   │   (rutas)   │    │ auth/admin  │    │ Bearer JWT  │                │
+│   └──────┬──────┘    └──────┬──────┘    └──────┬──────┘                │
+│          │                  │                  │                        │
+│          ▼                  ▼                  ▼                        │
+│   ┌──────────────────────────────────────────────────────────┐         │
+│   │                    Components (standalone)                │         │
+│   │  Index · Movies · MovieDetail · Auth · Users · Genres ·   │         │
+│   │  Directores · Account · Reviews (en MovieDetail)          │         │
+│   └──────────────────────────┬───────────────────────────────┘         │
+│                              │                                          │
+│   ┌──────────────────────────┴───────────────────────────────┐         │
+│   │                      Services                             │         │
+│   │  AuthService · MovieService · ReviewService · UsersService │         │
+│   │  GeneroService · DirectorService · TmdbService            │         │
+│   └──────────────────────────┬───────────────────────────────┘         │
+│                              │ HttpClient                               │
+└──────────────────────────────┼──────────────────────────────────────────┘
+                               │
+                               ▼
+                    ┌──────────────────────┐
+                    │   API Gateway        │
+                    │   localhost:9090     │
+                    │   (Backend)          │
+                    └──────────────────────┘
+```
 
 ---
 
-## 🛠️ Estado del proyecto
-El proyecto está en desarrollo:
-- [x] Estructura base en Angular
-- [x] Integración con APIs REST del backend
-- [ ] Sistema de reseñas y valoraciones (pendiente)
-- [ ] Mejoras en diseño responsive
+## Stack Tecnológico
+
+| Categoría | Tecnología |
+|-----------|------------|
+| **Framework** | Angular 19 |
+| **Lenguaje** | TypeScript 5.6 |
+| **Http** | HttpClient, RxJS |
+| **Rutas** | Angular Router, lazy loading |
+| **Formularios** | Reactive Forms, FormsModule |
+| **SSR** | Angular Universal (Express) |
+| **UI** | CSS3, SweetAlert2 |
+| **Otros** | Slick Carousel, jQuery |
 
 ---
 
-## 🔗 Repositorios relacionados
-- **Backend (Spring Boot + Microservicios):**  
-👉 [Repositorio Backend en GitHub](https://github.com/albertosanchez56/Gestor_Peliculas-Series/tree/main?tab=readme-ov-file)
+## Módulos y funcionalidades
+
+### Autenticación
+- Login y registro de usuarios
+- Perfil de usuario (cuenta, editar, cambiar contraseña)
+- Interceptor para enviar JWT en todas las peticiones
+- Guards para rutas protegidas (`authGuard`, `adminGuard`)
+
+### Películas
+- Página principal con carrusel y destacadas
+- Listado paginado con búsqueda
+- Detalle de película con póster, sinopsis, trailer, reparto
+- Reseñas por película: listado, estadísticas, formulario para crear reseña
+- Importación desde TMDB (admin)
+- CRUD completo (admin)
+
+### Directores y géneros
+- Listado, alta, edición (admin)
+
+### Usuarios (admin)
+- Listado de usuarios
+- Gestión de roles y estados
 
 ---
 
-## 📂 Cómo ejecutar el frontend
-1. Clonar este repositorio:
+## Modelos principales (interfaces)
 
-   ```bash
-   git clone https://github.com/albertosanchez56/Gestor_Peliculas-Series/tree/main?tab=readme-ov-file
+### Auth
+```
+CurrentUser: id, username, displayName, role, email?
+AuthResponse: accessToken, tokenType, expiresInSeconds, user
+LoginRequest: login, password
+RegisterRequest: username, email, displayName, password
+```
 
-2. Instalar dependencias:
+### Películas
+```
+Movies: id, title, description, releaseDate, director, genres[],
+        posterUrl, backdropUrl, trailerUrl, averageRating, ...
+CastCredit: id, personName, characterName, profileUrl, orderIndex
+```
 
-    npm install
+### Reseñas
+```
+ReviewViewDTO: id, movieId, userId, displayName, rating, comment,
+               containsSpoilers, edited, createdAt, updatedAt
+MovieStatsDTO: averageUserRating, voteCount
+CreateReviewRequest: movieId, rating, comment?, containsSpoilers
+```
 
-3. Ejecutar el servidor de desarrollo:
+---
 
-    ng serve
+## Rutas principales
 
-4. Abrir en el navegador:
+| Ruta | Componente | Protección |
+|------|------------|------------|
+| `/` | Redirige a Home | - |
+| `/Home` | Index (inicio) | Público |
+| `/movies` | Listado de películas | Público |
+| `/movies/:id` | Detalle + reseñas | Público |
+| `/login` | Login | Público |
+| `/register` | Registro | Público |
+| `/account` | Mi cuenta | authGuard |
+| `/account/edit` | Editar perfil | authGuard |
+| `/account/password` | Cambiar contraseña | authGuard |
+| `/peliculas` | CRUD películas | adminGuard |
+| `/generos` | CRUD géneros | adminGuard |
+| `/directores` | CRUD directores | adminGuard |
+| `/users` | Gestión usuarios | adminGuard |
+| `/tmdb-import` | Importar TMDB | adminGuard |
 
-    http://localhost:4200/
+---
 
+## Cómo ejecutar
 
+### Requisitos previos
+- Node.js 18+
+- npm 9+
+- Backend en ejecución (API Gateway en `http://localhost:9090`)
+
+### Instalación
+
+```bash
+# Navegar a la carpeta que contiene package.json
+cd Gestor_PeliculasYSerie_FrontEnd
+
+# Instalar dependencias
+npm install
+
+# Arrancar servidor de desarrollo
+npm start
+# o: ng serve
+```
+
+Abrir en el navegador: `http://localhost:4200`
+
+### Build de producción
+
+```bash
+npm run build
+```
+
+Salida en `dist/gestor-peliculas-yserie-front-end/`
+
+### SSR (Server-Side Rendering)
+
+```bash
+npm run build
+npm run serve:ssr:Gestor_PeliculasYSerie_FrontEnd
+```
+
+---
+
+## Configuración
+
+La URL base del API está definida en cada servicio:
+- `AuthService`: `http://localhost:9090/usuario/auth`
+- `MovieService`: `http://localhost:9090/peliculas`
+- `ReviewService`: `http://localhost:9090/reviews`
+
+Para distintos entornos, se recomienda crear `environment.ts` y `environment.prod.ts` con la URL base configurable.
+
+---
+
+## Estructura del proyecto
+
+```
+src/
+├── app/
+│   ├── core/                    # Auth, guards, interceptor
+│   │   ├── auth.service.ts
+│   │   ├── auth.models.ts
+│   │   ├── auth.interceptor.ts
+│   │   ├── auth.guard.ts
+│   │   └── admin.guard.ts
+│   ├── features/
+│   │   ├── auth/                # Login, register, account
+│   │   ├── movies/              # Listado, detalle, CRUD, TMDB
+│   │   ├── review/              # ReviewService
+│   │   ├── users/               # Gestión usuarios (admin)
+│   │   ├── generos/             # CRUD géneros
+│   │   ├── directores/          # CRUD directores
+│   │   └── index/               # Página de inicio
+│   ├── shared/
+│   │   └── carousel/            # Componente carrusel
+│   ├── app.component.ts
+│   ├── app.config.ts
+│   └── app.routes.ts
+├── assets/
+├── index.html
+├── main.ts
+├── main.server.ts
+└── styles.css
+```
+
+---
+
+## Testing
+
+```bash
+ng test
+```
+
+Ejecuta los tests con Karma/Jasmine. Algunos componentes incluyen `*.spec.ts` generados por Angular CLI.
+
+---
+
+## Próximos pasos
+
+- Crear **environment.ts** para configurar la URL base del API por entorno
+- Eliminar rutas duplicadas en `app.routes.ts` (p. ej. `account`)
+- Proteger con `adminGuard` rutas de registro/edición de directores, géneros y películas
+- Implementar funcionalidad del botón **favoritos** (actualmente solo `console.log`)
+- Añadir **manejo global de errores HTTP** (interceptor de errores)
+- Migrar scripts jQuery/carousel a componentes Angular nativos si se requiere
+
+---
+
+## Repositorio del backend
+
+[Backend — FilmScore API (Spring Boot + Microservicios)](https://github.com/albertosanchez56/Gestor_Peliculas-Series)
+
+---
+
+## Licencia
+
+Proyecto de uso personal y educativo.
