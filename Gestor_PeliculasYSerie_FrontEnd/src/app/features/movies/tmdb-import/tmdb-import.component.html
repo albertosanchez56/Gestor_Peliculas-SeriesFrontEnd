@@ -7,10 +7,24 @@
         <input type="number" [(ngModel)]="pages" min="1" max="10">
         <button (click)="doImportPopular()" [disabled]="loading">Importar</button>
 
-        <div *ngIf="summary" class="result">
+        <div *ngIf="loading" class="progress">
+            <span class="spinner" aria-hidden="true"></span>
+            <p>Importando página {{ currentPage }} de {{ pages }}…</p>
+            <p class="progress-stats" *ngIf="currentPage > 0">
+                <strong>Hasta ahora:</strong> {{ progressSummary.created + progressSummary.updated }} importadas, {{ progressSummary.skipped }} fallidas
+            </p>
+            <ul class="imported-list" *ngIf="importedMovies.length">
+                <li *ngFor="let m of importedMovies">{{ m.title }}</li>
+            </ul>
+        </div>
+
+        <div *ngIf="summary && !loading" class="result">
             <p><strong>Importadas:</strong> {{ (summary.created || 0) + (summary.updated || 0) }}</p>
             <p><strong>Fallidas:</strong> {{ summary.skipped || 0 }}</p>
-            <div *ngIf="summary.errors?.length">
+            <ul class="imported-list" *ngIf="importedMovies.length">
+                <li *ngFor="let m of importedMovies">{{ m.title }}</li>
+            </ul>
+            <div *ngIf="summary.errors?.length" class="result-errors">
                 <small>Errores:<br> {{ summary.errors.join(' | ') }}</small>
             </div>
         </div>
