@@ -64,6 +64,13 @@ export class MovieService {
     return this.httpClient.get<Movies[]>(`${this.baseUrl}/top-rated?limit=${limit}`);
   }
 
+  getTopRatedByGenre(genreSlug: string, limit: number): Observable<Movies[]> {
+    return this.httpClient.get<Movies[]>(
+      `${this.baseUrl}/top-rated-by-genre`,
+      { params: { genreSlug, limit: String(limit) } }
+    );
+  }
+
   getById(id: number): Observable<Movies> {
     return this.httpClient.get<Movies>(`${this.baseUrl}/peliculas/${id}`);
   }

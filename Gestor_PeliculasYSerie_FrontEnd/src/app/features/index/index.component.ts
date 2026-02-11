@@ -15,8 +15,8 @@ import { Router, RouterModule } from '@angular/router';
 })
 export class IndexComponent {
 
-  // GRID “Mis favoritos”
-  homeMovies: Movies[] = [];
+  // GRID “Género Acción” (mejor valoradas de ese género)
+  actionMovies: Movies[] = [];
 
   // Carruseles (prepara 2 listas)
   topRatedItems: CarouselItem[] = [];
@@ -36,7 +36,7 @@ export class IndexComponent {
     // cargar datos
     this.cargarTopRatedParaCarrusel();
     this.cargarPopularesParaCarrusel();
-    this.cargarPeliculasGrid();
+    this.cargarActionGrid();
   }
 
   onCarouselItem(it: CarouselItem): void {
@@ -73,10 +73,18 @@ export class IndexComponent {
     });
   }
 
-  private cargarPeliculasGrid(): void {
-    this.moviesSvc.getAll(0, 20).subscribe({
-      next: movies => this.homeMovies = movies.slice(0, 14)
+  /** Películas de Acción (mejor valoradas). 14 en 2K, 10 en 1080. */
+  private cargarActionGrid(): void {
+    const limit = this.getActionGridLimit();
+    this.moviesSvc.getTopRatedByGenre('accion', limit).subscribe({
+      next: movies => this.actionMovies = movies
     });
+  }
+
+  /** 14 si resolución 2K (>= 2048px), 10 si 1080. */
+  private getActionGridLimit(): number {
+    if (!isPlatformBrowser(this.platformId)) return 10;
+    return window.innerWidth >= 2048 ? 14 : 10;
   }
 
   private computeLeftPadding(): void {
@@ -90,5 +98,6 @@ export class IndexComponent {
   @HostListener('window:resize')
   onResize(): void {
     this.computeLeftPadding();
+    this.cargarActionGrid();
   }
 }

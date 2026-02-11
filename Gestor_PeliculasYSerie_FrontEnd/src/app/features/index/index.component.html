@@ -17,14 +17,14 @@
 </app-carousel>
 
 
-  <!-- GRID “Mis favoritos” -->
-  <div class="titulos">
-    <h1>Mis favoritos</h1>
+  <!-- GRID Género Acción (mejor valoradas) -->
+  <div class="titulos section-title-block">
+    <h1 >Acción</h1>
   </div>
 
   <div class="divsproductos">
   <a class="product"
-     *ngFor="let m of homeMovies"
+     *ngFor="let m of actionMovies"
      [routerLink]="['/movies', m.id]">
     <img class="blur-in" [src]="m.posterUrl || 'assets/imagenes/placeholder-poster.png'" [alt]="m.title" />
     <div class="overlay">

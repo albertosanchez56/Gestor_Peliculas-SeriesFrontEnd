@@ -1,0 +1,86 @@
+/* Contenedor principal home */
+.home-main {
+  padding-bottom: 3rem;
+}
+
+/* Hero: banner con overlay */
+.hero-banner {
+  position: relative;
+}
+
+.hero-overlay {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  background: rgba(0, 0, 0, 0.45);
+  color: #fff;
+  pointer-events: none;
+}
+
+.hero-overlay .hero-cta {
+  pointer-events: auto;
+}
+
+.hero-title {
+  font-size: clamp(1.8rem, 4vw, 2.75rem);
+  font-weight: 700;
+  margin: 0 0 0.35rem;
+  letter-spacing: 0.02em;
+  color: #fff;
+  text-shadow: 0 2px 12px rgba(0, 0, 0, 0.6);
+}
+
+.hero-slogan {
+  font-size: clamp(0.95rem, 2vw, 1.1rem);
+  margin: 0 0 1.25rem;
+  opacity: 0.95;
+  text-shadow: 0 1px 4px rgba(0, 0, 0, 0.5);
+}
+
+.hero-cta {
+  padding: 0.6rem 1.5rem;
+  background: #FFA500;
+  color: #1a1a1a;
+  border-radius: 6px;
+  text-decoration: none;
+  font-weight: 600;
+  transition: background 0.2s ease, transform 0.15s ease;
+}
+
+.hero-cta:hover {
+  background: #e69500;
+  transform: scale(1.03);
+}
+
+/* Separación entre secciones */
+.home-section {
+  margin-top: 2.5rem;
+}
+
+.home-section-favorites {
+  margin-top: 2.75rem;
+}
+
+/* Título de bloque (ej. Mis favoritos) */
+.section-title-block {
+  margin-bottom: 0.75rem;
+}
+
+.section-title {
+  font-size: 1.45rem;
+  font-weight: 600;
+  color: #fff;
+  margin: 0;
+  padding-bottom: 0.35rem;
+  border-bottom: 2px solid #FFA500;
+  display: inline-block;
+}
+
+.section-subtitle {
+  font-size: 0.9rem;
+  color: rgba(255, 255, 255, 0.7);
+  margin: 0.35rem 0 0;
+}
