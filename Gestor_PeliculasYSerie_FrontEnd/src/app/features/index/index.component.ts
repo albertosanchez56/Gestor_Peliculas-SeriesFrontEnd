@@ -2,6 +2,7 @@ import { CommonModule, isPlatformBrowser } from '@angular/common';
 import { Component, Inject, PLATFORM_ID, HostListener } from '@angular/core';
 import { Movies } from '../movies/movies';
 import { MovieService } from '../movies/service/movie.service';
+import { GeneroService, GenreCard } from '../generos/service/genero.service';
 import { CarouselItem, CarouselComponent } from '../../shared/carousel/carousel.component';
 import { Router, RouterModule } from '@angular/router';
 
@@ -22,13 +23,18 @@ export class IndexComponent {
   topRatedItems: CarouselItem[] = [];
   popularItems:  CarouselItem[] = [];
 
+  // Géneros para mini-sección de tarjetas
+  genreCards: GenreCard[] = [];
+
   // Ajustes
   steps = 5;
   leftPaddingPx = 175;
 
   constructor(
     @Inject(PLATFORM_ID) private platformId: Object,
-    private moviesSvc: MovieService,private router: Router
+    private moviesSvc: MovieService,
+    private generoSvc: GeneroService,
+    private router: Router
   ) {
     // padding inicial según ancho
     this.computeLeftPadding();
@@ -37,6 +43,7 @@ export class IndexComponent {
     this.cargarTopRatedParaCarrusel();
     this.cargarPopularesParaCarrusel();
     this.cargarActionGrid();
+    this.cargarGenreCards();
   }
 
   onCarouselItem(it: CarouselItem): void {
@@ -78,6 +85,12 @@ export class IndexComponent {
     const limit = this.getActionGridLimit();
     this.moviesSvc.getTopRatedByGenre('accion', limit).subscribe({
       next: movies => this.actionMovies = movies
+    });
+  }
+
+  private cargarGenreCards(): void {
+    this.generoSvc.getGenreCards().subscribe({
+      next: cards => this.genreCards = cards
     });
   }
 

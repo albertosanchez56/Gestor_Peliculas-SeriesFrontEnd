@@ -3,6 +3,14 @@ import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import { Generos } from '../generos';
 
+export interface GenreCard {
+  id: number;
+  name: string;
+  slug: string;
+  movieCount: number;
+  posterUrl?: string | null;
+}
+
 @Injectable({
   providedIn: 'root'
 })
@@ -11,6 +19,11 @@ export class GeneroService {
   private baseUrl = "http://localhost:9090/generos";
   
     constructor(private httpClient : HttpClient) { }
+
+    /** Géneros con conteo de películas (para tarjetas en home). */
+    getGenreCards(): Observable<GenreCard[]> {
+      return this.httpClient.get<GenreCard[]>(`${this.baseUrl}/cards`);
+    }
 
     obtenerListaDeGeneros():Observable<Generos[]>{
         return this.httpClient.get<Generos[]>(`${this.baseUrl}/mostrargeneros`);

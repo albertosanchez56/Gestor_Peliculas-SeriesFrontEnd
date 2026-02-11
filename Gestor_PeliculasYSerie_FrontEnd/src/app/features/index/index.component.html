@@ -45,4 +45,23 @@
     (itemClick)="onCarouselItem($event)">
   </app-carousel>
 
+  <!-- Mini-sección Géneros (tarjetas con contador) -->
+  <section class="genres-mini">
+    <h1 class="genres-mini-title">Géneros</h1>
+    <div class="genres-cards">
+      <a *ngFor="let g of genreCards"
+         class="genre-card"
+         [routerLink]="['/movies']"
+         [queryParams]="{ genre: g.slug }">
+        <img class="genre-card-bg"
+             [src]="g.posterUrl || 'assets/imagenes/placeholder-poster.png'"
+             [alt]="''"
+             loading="lazy" />
+        <span class="genre-card-overlay"></span>
+        <span class="genre-card-name">{{ g.name }}</span>
+        <span class="genre-card-count">({{ g.movieCount }})</span>
+      </a>
+    </div>
+  </section>
+
 </main>
