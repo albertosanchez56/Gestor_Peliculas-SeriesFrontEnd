@@ -36,10 +36,10 @@
 </div>
 
 
-  <!-- Carrusel 2: Selecciones populares -->
+  <!-- Carrusel 2: Próximos estrenos (sin puntuación) -->
   <app-carousel
-    [title]="'Selecciones populares'"
-    [items]="popularItems"
+    [title]="'Próximos estrenos'"
+    [items]="upcomingItems"
     [steps]="steps"
     [leftPadding]="leftPaddingPx"
     (itemClick)="onCarouselItem($event)">
@@ -70,10 +70,20 @@
     </div>
   </section>
 
-  <!-- Carrusel: Próximos estrenos -->
+  <!-- Carrusel: Actores más populares (datos en recuadro gris abajo) -->
   <app-carousel
-    [title]="'Próximos estrenos'"
-    [items]="upcomingItems"
+    [title]="'Actores más populares'"
+    [items]="popularActorsItems"
+    [steps]="steps"
+    [leftPadding]="leftPaddingPx"
+    [infoAtBottom]="true"
+    (itemClick)="onCarouselItem($event)">
+  </app-carousel>
+
+  <!-- Carrusel: Selecciones populares -->
+  <app-carousel
+    [title]="'Selecciones populares'"
+    [items]="popularItems"
     [steps]="steps"
     [leftPadding]="leftPaddingPx"
     (itemClick)="onCarouselItem($event)">

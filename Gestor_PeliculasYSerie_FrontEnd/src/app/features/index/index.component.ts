@@ -1,7 +1,7 @@
 import { CommonModule, isPlatformBrowser } from '@angular/common';
 import { Component, Inject, PLATFORM_ID, HostListener } from '@angular/core';
 import { Movies } from '../movies/movies';
-import { MovieService } from '../movies/service/movie.service';
+import { MovieService, PopularActor } from '../movies/service/movie.service';
 import { GeneroService, GenreCard } from '../generos/service/genero.service';
 import { CarouselItem, CarouselComponent } from '../../shared/carousel/carousel.component';
 import { Router, RouterModule } from '@angular/router';
@@ -22,6 +22,7 @@ export class IndexComponent {
   // Carruseles
   topRatedItems: CarouselItem[] = [];
   popularItems:  CarouselItem[] = [];
+  popularActorsItems: CarouselItem[] = [];
   upcomingItems: CarouselItem[] = [];
 
   // Géneros para mini-sección de tarjetas
@@ -49,6 +50,7 @@ export class IndexComponent {
     this.cargarPopularesParaCarrusel();
     this.cargarActionGrid();
     this.cargarGenreCards();
+    this.cargarPopularActors();
     this.cargarUpcomingParaCarrusel();
   }
 
@@ -92,7 +94,7 @@ export class IndexComponent {
         this.upcomingItems = movies.slice(0, 19).map(m => ({
           img: m.posterUrl || m.backdropUrl || '',
           title: m.title ?? '',
-          rating: (typeof m.averageRating === 'number') ? (m.averageRating.toFixed(1) + '/10') : '—',
+          rating: '', // Próximos estrenos: no se muestra puntuación
           description: m.description ?? '',
           movieId: m.id
         }));
@@ -111,6 +113,32 @@ export class IndexComponent {
   private cargarGenreCards(): void {
     this.generoSvc.getGenreCards().subscribe({
       next: cards => this.genreCards = cards
+    });
+  }
+
+  private cargarPopularActors(): void {
+    this.moviesSvc.getPopularActors(19).subscribe({
+      next: actors => {
+        const list = Array.isArray(actors) ? actors : [];
+        this.popularActorsItems = list.map((a: PopularActor) => {
+          const movieLine = (a.mostPopularMovieTitle && a.mostPopularCharacterName)
+            ? a.mostPopularMovieTitle + ' (' + a.mostPopularCharacterName + ')'
+            : (a.mostPopularMovieTitle || '');
+          const desc = movieLine
+            ? 'En ' + Number(a.movieCount ?? 0) + ' películas\n' + movieLine
+            : 'En ' + Number(a.movieCount ?? 0) + ' películas';
+          return {
+            img: (a.profileUrl != null && a.profileUrl !== '') ? a.profileUrl : 'assets/imagenes/placeholder-poster.png',
+            title: a.personName ?? 'Sin nombre',
+            rating: '',
+            description: desc,
+            movieId: undefined
+          };
+        });
+      },
+      error: err => {
+        console.error('Error cargando actores populares:', err);
+      }
     });
   }
 

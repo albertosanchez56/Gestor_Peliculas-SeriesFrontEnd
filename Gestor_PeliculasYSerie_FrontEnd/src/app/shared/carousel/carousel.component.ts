@@ -27,7 +27,11 @@ export class CarouselComponent implements OnChanges, AfterViewInit {
   @Input() steps = 5;
   @Input() itemWidth = 290;
   @Input() leftPadding = 175;
-  @Input() responsiveSteps = true; // NUEVO: que el componente ajuste el paso solo
+  @Input() responsiveSteps = true;
+  /** Si true, el overlay (nombre, descripción) se muestra siempre, sin necesidad de hover. */
+  @Input() alwaysShowOverlay = false;
+  /** Si true, no se usa overlay; los datos se muestran en un recuadro gris debajo de la imagen. */
+  @Input() infoAtBottom = false;
 
   @Output() itemClick = new EventEmitter<CarouselItem>();
 

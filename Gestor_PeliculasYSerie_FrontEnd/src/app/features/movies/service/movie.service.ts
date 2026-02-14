@@ -19,6 +19,15 @@ export interface MovieSuggestionDTO {
   posterUrl?: string;
 }
 
+export interface PopularActor {
+  tmdbPersonId: number;
+  personName: string;
+  profileUrl?: string | null;
+  movieCount: number;
+  mostPopularMovieTitle?: string | null;
+  mostPopularCharacterName?: string | null;
+}
+
 @Injectable({
   providedIn: 'root'
 })
@@ -73,6 +82,10 @@ export class MovieService {
 
   getUpcoming(limit = 19): Observable<Movies[]> {
     return this.httpClient.get<Movies[]>(`${this.baseUrl}/upcoming`, { params: { limit: String(limit) } });
+  }
+
+  getPopularActors(limit = 19): Observable<PopularActor[]> {
+    return this.httpClient.get<PopularActor[]>(`${this.baseUrl}/actors/popular`, { params: { limit: String(limit) } });
   }
 
   getById(id: number): Observable<Movies> {

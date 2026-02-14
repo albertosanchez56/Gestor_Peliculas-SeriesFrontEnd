@@ -1,0 +1,83 @@
+/* Carruseles de películas: altura fija para que todas las imágenes ocupen lo mismo */
+.carousel-item:not(.carousel-item--bottom-info) .product {
+  height: 400px;
+  display: block;
+}
+
+.carousel-item:not(.carousel-item--bottom-info) .product img {
+  width: 100%;
+  height: 100%;
+  max-height: none;
+  object-fit: cover;
+  display: block;
+}
+
+/* Cuando alwaysShowOverlay es true, el texto se ve siempre (sin hover) */
+.carousel-always-overlay .product .overlay {
+  opacity: 1;
+}
+
+.carousel-always-overlay .product:hover .overlay {
+  opacity: 1;
+}
+
+/* Modo recuadro abajo: altura fija para que todos los ítems tengan la misma altura */
+.carousel-info-at-bottom .carousel-item--bottom-info {
+  display: flex;
+  flex-direction: column;
+  min-width: 270px;
+  height: 400px;
+}
+
+.carousel-info-at-bottom .carousel-item--bottom-info .product {
+  flex: 0 0 300px;
+  height: 300px;
+  overflow: hidden;
+  border-radius: 5px 5px 0 0;
+}
+
+.carousel-info-at-bottom .carousel-item--bottom-info .product img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.carousel-info-at-bottom .carousel-item--bottom-info .product:hover > img {
+  filter: none;
+}
+
+.carousel-item-infobar {
+  flex: 0 0 100px;
+  min-height: 100px;
+  background: #3a3a3a;
+  color: #e5e5e5;
+  padding: 10px 12px;
+  border-radius: 0 0 5px 5px;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+.carousel-item-infobar-title {
+  margin: 0 0 4px 0;
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: #fff;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  flex-shrink: 0;
+}
+
+.carousel-item-infobar-desc {
+  margin: 0;
+  font-size: 0.8rem;
+  color: #b0b0b0;
+  white-space: pre-line;
+  overflow: hidden;
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  line-clamp: 3;
+}

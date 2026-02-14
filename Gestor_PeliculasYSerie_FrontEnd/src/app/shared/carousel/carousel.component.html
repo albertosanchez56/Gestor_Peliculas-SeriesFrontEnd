@@ -2,22 +2,26 @@
   <h1>{{ title }}</h1>
 </div>
 
-<div class="carousel-container2">
+<div class="carousel-container2" [class.carousel-always-overlay]="alwaysShowOverlay && !infoAtBottom" [class.carousel-info-at-bottom]="infoAtBottom">
   <button class="prev-btn" (click)="move(-1)" [class.hidden]="!showPrev">&#10094;</button>
 
   <div #wrapper class="carousel-wrapper2"
        [style.margin-left.px]="currentIndex === 0 ? leftPadding : 0">
     <div #track class="carousel2">
-      <div class="carousel-item" *ngFor="let it of items">
+      <div class="carousel-item" *ngFor="let it of items" [class.carousel-item--bottom-info]="infoAtBottom">
         <div class="product" (click)="itemClick.emit(it)">
           <img class="blur-in"
                [src]="it.img || 'assets/imagenes/placeholder-poster.png'"
                [alt]="it.title" />
-          <div class="overlay">
+          <div class="overlay" *ngIf="!infoAtBottom">
             <p class="titleproducto">{{ it.title }}</p>
             <p class="rating" *ngIf="it.rating">⭐{{ it.rating }}</p>
             <p class="descripcion">{{ it.description }}</p>
           </div>
+        </div>
+        <div class="carousel-item-infobar" *ngIf="infoAtBottom">
+          <p class="carousel-item-infobar-title">{{ it.title }}</p>
+          <p class="carousel-item-infobar-desc">{{ it.description }}</p>
         </div>
       </div>
     </div>
