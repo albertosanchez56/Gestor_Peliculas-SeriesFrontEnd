@@ -163,6 +163,24 @@
   margin-top: 0.25rem;
 }
 
+.genre-card-more {
+  cursor: pointer;
+  background: rgba(255, 165, 0, 0.15);
+  border: 1px solid rgba(255, 165, 0, 0.5);
+  font: inherit;
+  color: #fff;
+}
+
+.genre-card-more:hover {
+  background: rgba(255, 165, 0, 0.25);
+  border-color: #FFA500;
+}
+
+.genre-card-more-text {
+  font-weight: 600;
+  font-size: 1rem;
+}
+
 @media (min-width: 1900px) and (max-width: 2999px) {
   .genres-mini {
     max-width: 2020px;

@@ -19,8 +19,9 @@ export class MoviesPageComponent {
   lastPageKnown: number | null = null;
 
   private cache = new Map<number, Movies[]>();
-  private sizeBucket = '';  // '2k' | '1080' | 'default'
-  currentQuery = '';        // ← AQUÍ guardamos ?q
+  private sizeBucket = '';
+  currentQuery = '';
+  currentGenre = '';
 
   constructor(
     private movieSvc: MovieService,
@@ -37,8 +38,14 @@ export class MoviesPageComponent {
       const qpPage = Number(q.get('page'));
       const qpSize = Number(q.get('size'));
       const qpQuery = (q.get('q') || '').trim();
+      const qpGenre = (q.get('genre') || '').trim();
 
-      // Si cambia el término de búsqueda, resetea todo
+      if (qpGenre !== this.currentGenre) {
+        this.currentGenre = qpGenre;
+        this.cache.clear();
+        this.lastPageKnown = null;
+        this.page = 0;
+      }
       if (qpQuery !== this.currentQuery) {
         this.currentQuery = qpQuery;
         this.cache.clear();
@@ -111,7 +118,7 @@ export class MoviesPageComponent {
     if (this.lastPageKnown !== null && p > this.lastPageKnown) return;
 
     // Si hay caché para esta página con este filtro, úsala
-    const cacheKey = this.cacheKey(p, this.currentQuery, this.size);
+    const cacheKey = this.cacheKey(p, this.currentQuery, this.currentGenre, this.size);
     const cached = this.cache.get(cacheKey);
     if (cached) {
       this.movies = cached;
@@ -121,7 +128,7 @@ export class MoviesPageComponent {
     }
 
     this.loading = true;
-    this.movieSvc.getPeliculasBrowser(p, this.size, this.currentQuery).subscribe({
+    this.movieSvc.getPeliculasBrowser(p, this.size, this.currentQuery, this.currentGenre || undefined).subscribe({
       next: (rows: Movies[]) => {
         this.movies = rows;
         this.cache.set(cacheKey, rows);
@@ -139,10 +146,14 @@ export class MoviesPageComponent {
   }
 
   private updateUrl(): void {
-    // Escribe ?page, ?size y ?q en la URL (sin recargar)
     this.router.navigate([], {
       relativeTo: this.route,
-      queryParams: { page: this.page, size: this.size, q: this.currentQuery || null },
+      queryParams: {
+        page: this.page,
+        size: this.size,
+        q: this.currentQuery || null,
+        genre: this.currentGenre || null,
+      },
       queryParamsHandling: 'merge',
       replaceUrl: true,
     });
@@ -168,13 +179,19 @@ export class MoviesPageComponent {
     return `Página ${current}`;
   }
 
-  private cacheKey(p: number, q: string, size: number): number {
-    // clave simple y rápida: combina valores en un hash numérico
-    // (también puedes usar un string `${p}|${size}|${q}`)
+  private cacheKey(p: number, q: string, genre: string, size: number): number {
     let h = 17;
     h = (h * 31 + p) | 0;
     h = (h * 31 + size) | 0;
     for (let i = 0; i < q.length; i++) h = (h * 31 + q.charCodeAt(i)) | 0;
+    for (let i = 0; i < genre.length; i++) h = (h * 31 + genre.charCodeAt(i)) | 0;
     return h;
+  }
+
+  /** Título de la sección: "Películas" o "Películas — Acción" cuando hay filtro por género */
+  get pageTitle(): string {
+    if (!this.currentGenre) return 'Películas';
+    const name = this.currentGenre.charAt(0).toUpperCase() + this.currentGenre.slice(1).toLowerCase();
+    return `Películas — ${name}`;
   }
 }

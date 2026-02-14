@@ -71,6 +71,10 @@ export class MovieService {
     );
   }
 
+  getUpcoming(limit = 19): Observable<Movies[]> {
+    return this.httpClient.get<Movies[]>(`${this.baseUrl}/upcoming`, { params: { limit: String(limit) } });
+  }
+
   getById(id: number): Observable<Movies> {
     return this.httpClient.get<Movies>(`${this.baseUrl}/peliculas/${id}`);
   }
@@ -89,16 +93,18 @@ export class MovieService {
       { params: { q, size } }
     );
   }
-  getPeliculasBrowser(page: number, size: number, q?: string): Observable<Movies[]> {
-  let params = new HttpParams()
-    .set('page', String(page))
-    .set('size', String(size));
-  if (q && q.trim().length) {
-    params = params.set('q', q.trim());
+  getPeliculasBrowser(page: number, size: number, q?: string, genre?: string): Observable<Movies[]> {
+    let params = new HttpParams()
+      .set('page', String(page))
+      .set('size', String(size));
+    if (q && q.trim().length) {
+      params = params.set('q', q.trim());
+    }
+    if (genre && genre.trim().length) {
+      params = params.set('genre', genre.trim());
+    }
+    return this.httpClient.get<Movies[]>(`${this.baseUrl}/peliculas`, { params });
   }
-  // ANTES: return this.httpClient.get<Movies[]>('/peliculas', { params });
-  return this.httpClient.get<Movies[]>(`${this.baseUrl}/peliculas`, { params });
-}
 
 
 

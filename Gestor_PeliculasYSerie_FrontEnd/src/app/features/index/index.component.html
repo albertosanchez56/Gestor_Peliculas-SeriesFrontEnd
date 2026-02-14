@@ -49,7 +49,7 @@
   <section class="genres-mini">
     <h1 class="genres-mini-title">Géneros</h1>
     <div class="genres-cards">
-      <a *ngFor="let g of genreCards"
+      <a *ngFor="let g of visibleGenreCards"
          class="genre-card"
          [routerLink]="['/movies']"
          [queryParams]="{ genre: g.slug }">
@@ -61,7 +61,22 @@
         <span class="genre-card-name">{{ g.name }}</span>
         <span class="genre-card-count">({{ g.movieCount }})</span>
       </a>
+      <button *ngIf="showMoreGenresButton"
+              type="button"
+              class="genre-card genre-card-more"
+              (click)="genresExpanded = true">
+        <span class="genre-card-more-text">Ver más géneros</span>
+      </button>
     </div>
   </section>
+
+  <!-- Carrusel: Próximos estrenos -->
+  <app-carousel
+    [title]="'Próximos estrenos'"
+    [items]="upcomingItems"
+    [steps]="steps"
+    [leftPadding]="leftPaddingPx"
+    (itemClick)="onCarouselItem($event)">
+  </app-carousel>
 
 </main>

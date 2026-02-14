@@ -19,12 +19,17 @@ export class IndexComponent {
   // GRID “Género Acción” (mejor valoradas de ese género)
   actionMovies: Movies[] = [];
 
-  // Carruseles (prepara 2 listas)
+  // Carruseles
   topRatedItems: CarouselItem[] = [];
   popularItems:  CarouselItem[] = [];
+  upcomingItems: CarouselItem[] = [];
 
   // Géneros para mini-sección de tarjetas
   genreCards: GenreCard[] = [];
+  /** Si es false, solo se muestran 2 filas y el botón "Ver más" en la última celda */
+  genresExpanded = false;
+  /** Número de celdas en 2 filas (ej. 5 cols × 2 = 10). La última se usa para el botón "Ver más". */
+  private readonly initialGenreSlots = 10;
 
   // Ajustes
   steps = 5;
@@ -44,6 +49,7 @@ export class IndexComponent {
     this.cargarPopularesParaCarrusel();
     this.cargarActionGrid();
     this.cargarGenreCards();
+    this.cargarUpcomingParaCarrusel();
   }
 
   onCarouselItem(it: CarouselItem): void {
@@ -80,6 +86,20 @@ export class IndexComponent {
     });
   }
 
+  private cargarUpcomingParaCarrusel(): void {
+    this.moviesSvc.getUpcoming(19).subscribe({
+      next: movies => {
+        this.upcomingItems = movies.slice(0, 19).map(m => ({
+          img: m.posterUrl || m.backdropUrl || '',
+          title: m.title ?? '',
+          rating: (typeof m.averageRating === 'number') ? (m.averageRating.toFixed(1) + '/10') : '—',
+          description: m.description ?? '',
+          movieId: m.id
+        }));
+      }
+    });
+  }
+
   /** Películas de Acción (mejor valoradas). 14 en 2K, 10 en 1080. */
   private cargarActionGrid(): void {
     const limit = this.getActionGridLimit();
@@ -92,6 +112,17 @@ export class IndexComponent {
     this.generoSvc.getGenreCards().subscribe({
       next: cards => this.genreCards = cards
     });
+  }
+
+  /** Géneros a mostrar: todos si está expandido, si no solo los de las 2 primeras filas (última celda = botón). */
+  get visibleGenreCards(): GenreCard[] {
+    if (this.genresExpanded) return this.genreCards;
+    return this.genreCards.slice(0, Math.max(0, this.initialGenreSlots - 1));
+  }
+
+  /** Mostrar botón "Ver más" cuando hay más géneros que los visibles en 2 filas. */
+  get showMoreGenresButton(): boolean {
+    return !this.genresExpanded && this.genreCards.length > this.initialGenreSlots - 1;
   }
 
   /** 14 si resolución 2K (>= 2048px), 10 si 1080. */
