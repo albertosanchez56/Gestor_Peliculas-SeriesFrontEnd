@@ -158,23 +158,27 @@
       </div>
 
       <div class="review-list" *ngIf="!loadingReviews && reviews.length">
-        <article class="review-card" *ngFor="let r of reviews">
-          <div class="review-head">
-            <div class="review-score">{{ r.rating }}/10</div>
-
-            <div class="review-meta">
-              <div class="review-author">{{ r.displayName }}</div>
-              <div class="review-date">{{ r.createdAt | date:'dd/MM/yyyy HH:mm' }}</div>
-
-              <span *ngIf="r.edited">Editada</span>
-              <span *ngIf="r.containsSpoilers">⚠ Spoilers</span>
+        <ng-container *ngFor="let r of sortedReviews; let i = index">
+          <article class="review-card" [class.review-card--mine]="isMyReview(r)">
+            <span class="review-card-badge" *ngIf="isMyReview(r)">Tu reseña</span>
+            <div class="review-head">
+              <div class="review-score">{{ r.rating }}/10</div>
+              <div class="review-meta">
+                <div class="review-author">{{ r.displayName }}</div>
+                <div class="review-date">{{ r.createdAt | date:'dd/MM/yyyy HH:mm' }}</div>
+                <span *ngIf="r.edited">Editada</span>
+                <span *ngIf="r.containsSpoilers">⚠ Spoilers</span>
+              </div>
             </div>
+            <p class="review-comment" *ngIf="r.comment">{{ r.comment }}</p>
+            <p class="review-comment" *ngIf="!r.comment"><em>Sin comentario.</em></p>
+          </article>
+          <!-- Separador entre tu reseña y el resto cuando la tuya va primera -->
+          <div class="review-list-separator" *ngIf="myReview && i === 0 && sortedReviews.length > 1">
+            <hr />
+            <p class="review-list-separator-label">Otras opiniones</p>
           </div>
-
-
-          <p class="review-comment" *ngIf="r.comment">{{ r.comment }}</p>
-          <p class="review-comment" *ngIf="!r.comment"><em>Sin comentario.</em></p>
-        </article>
+        </ng-container>
       </div>
     </section>
   </div>

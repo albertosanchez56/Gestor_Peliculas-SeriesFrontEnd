@@ -247,6 +247,19 @@ export class MovieDetailComponent implements OnInit {
     return this.showAllCast ? this.cast : this.cast.slice(0, 10);
   }
 
+  /** Listado de reseñas con la del usuario actual primera (si existe). */
+  get sortedReviews(): ReviewViewDTO[] {
+    if (!this.reviews.length || !this.myReview) return this.reviews;
+    const mine = this.reviews.find(r => r.id === this.myReview!.id);
+    if (!mine) return this.reviews;
+    const rest = this.reviews.filter(r => r.id !== this.myReview!.id);
+    return [mine, ...rest];
+  }
+
+  isMyReview(r: ReviewViewDTO): boolean {
+    return !!this.myReview && r.id === this.myReview.id;
+  }
+
   toggleCast(): void {
     this.showAllCast = !this.showAllCast;
   }

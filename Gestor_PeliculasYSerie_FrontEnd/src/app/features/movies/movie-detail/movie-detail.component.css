@@ -499,6 +499,40 @@ hr {
   padding: 14px 14px 12px;
   border: 1px solid rgba(255,255,255,0.06);
   box-shadow: 0 10px 24px rgba(0,0,0,0.35);
+  position: relative;
+}
+
+/* Resaltado para la reseña del usuario actual (siempre primera cuando existe) */
+.review-card--mine {
+  border-left: 4px solid #FFA500;
+  background: linear-gradient(180deg, rgba(255,165,0,0.12), rgba(255,165,0,0.06));
+  box-shadow: 0 10px 24px rgba(0,0,0,0.35), inset 0 0 0 1px rgba(255,165,0,0.15);
+}
+
+.review-card-badge {
+  position: absolute;
+  top: 10px;
+  right: 14px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: #FFA500;
+  text-transform: uppercase;
+  letter-spacing: 0.02em;
+}
+
+/* Separador entre "Tu reseña" y "Otras opiniones" */
+.review-list-separator {
+  margin: 18px 0 10px;
+}
+
+.review-list-separator hr {
+  margin: 0 0 10px;
+}
+
+.review-list-separator-label {
+  font-size: 0.9rem;
+  color: #888;
+  margin: 0;
 }
 
 /* cabecera: score a la izquierda, meta a la derecha */
