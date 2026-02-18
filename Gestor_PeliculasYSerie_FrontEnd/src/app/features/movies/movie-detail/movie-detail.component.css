@@ -258,6 +258,13 @@ hr {
   box-shadow: 0 8px 20px rgba(0,0,0,0.35);
 }
 
+/* Mismo resaltado que la tarjeta "Tu reseña" en el listado */
+.review-form--mine {
+  border-left: 4px solid #FFA500;
+  background: linear-gradient(180deg, rgba(255,165,0,0.12), rgba(255,165,0,0.06));
+  box-shadow: 0 8px 20px rgba(0,0,0,0.35), inset 0 0 0 1px rgba(255,165,0,0.15);
+}
+
 .review-form h3 {
   margin: 0 0 10px;
   color: #fff;
@@ -535,13 +542,89 @@ hr {
   margin: 0;
 }
 
-/* cabecera: score a la izquierda, meta a la derecha */
+/* cabecera: score, meta, botón borrar (si aplica) */
 .review-head {
   display: grid;
-  grid-template-columns: auto 1fr;
+  grid-template-columns: auto 1fr auto;
   gap: 12px;
   align-items: start;
   margin-bottom: 10px;
+}
+
+.review-actions {
+  display: flex;
+  gap: 10px;
+  margin-top: 12px;
+  flex-wrap: wrap;
+}
+
+.review-form .btn-edit {
+  background: #555;
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  padding: 8px 14px;
+  cursor: pointer;
+  font-size: 0.9rem;
+}
+
+.review-form .btn-edit:hover {
+  background: #666;
+}
+
+.review-form .btn-delete {
+  background: transparent;
+  color: #e57373;
+  border: 1px solid #e57373;
+  border-radius: 8px;
+  padding: 8px 14px;
+  cursor: pointer;
+  font-size: 0.9rem;
+}
+
+.review-form .btn-delete:hover:not(:disabled) {
+  background: rgba(229, 115, 115, 0.15);
+}
+
+.review-form .btn-delete:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+}
+
+.review-form .btn-cancel {
+  background: #444;
+  color: #ccc;
+  border: none;
+  border-radius: 8px;
+  padding: 8px 14px;
+  cursor: pointer;
+  font-size: 0.9rem;
+}
+
+.review-form .btn-cancel:hover {
+  background: #555;
+}
+
+.review-card-delete {
+  grid-column: 3;
+  justify-self: end;
+  background: transparent;
+  color: #999;
+  border: 1px solid #555;
+  border-radius: 6px;
+  padding: 4px 10px;
+  font-size: 0.8rem;
+  cursor: pointer;
+}
+
+.review-card-delete:hover:not(:disabled) {
+  color: #e57373;
+  border-color: #e57373;
+}
+
+.review-card-delete:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
 }
 
 .review-score {

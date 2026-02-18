@@ -61,10 +61,12 @@ export class MovieDetailComponent implements OnInit {
   myReview: ReviewViewDTO | null = null;
   loadingMyReview = false;
 
-  // Form crear review
+  // Form crear/editar review
   myRating = 8;
   myComment = '';
   mySpoilers = false;
+  isEditingMyReview = false;
+  deletingReviewId: number | null = null;
 
   constructor(
     private route: ActivatedRoute,
@@ -163,35 +165,95 @@ export class MovieDetailComponent implements OnInit {
     const mv = this.movie;
     if (!mv) return;
     if (!this.auth.isLoggedIn()) return;
-    if (this.myReview) return; // ✅ si ya hay review, no permitir
+    if (this.myReview && !this.isEditingMyReview) return;
 
     const rating = Number(this.myRating);
     if (!Number.isFinite(rating) || rating < 1 || rating > 10) return;
 
     this.sendingReview = true;
 
+    if (this.isEditingMyReview && this.myReview) {
+      this.reviewSvc.update(this.myReview.id, {
+        rating,
+        comment: this.myComment?.trim() || null,
+        containsSpoilers: this.mySpoilers
+      }).subscribe({
+        next: () => {
+          this.isEditingMyReview = false;
+          this.loadReviews(mv.id);
+          this.loadMyReview(mv.id);
+          this.sendingReview = false;
+        },
+        error: () => { this.sendingReview = false; }
+      });
+      return;
+    }
+
     this.reviewSvc.create({
       movieId: mv.id,
       rating,
       comment: this.myComment?.trim() || undefined,
-
       containsSpoilers: this.mySpoilers
     }).subscribe({
       next: () => {
-        // reset form
         this.myComment = '';
         this.mySpoilers = false;
-
-        // refrescar stats/listado + mi review
         this.loadReviews(mv.id);
         this.loadMyReview(mv.id);
-
         this.sendingReview = false;
       },
-      error: () => {
-        this.sendingReview = false;
-      }
+      error: () => { this.sendingReview = false; }
     });
+  }
+
+  startEdit(): void {
+    if (!this.myReview) return;
+    this.myRating = this.myReview.rating;
+    this.myComment = this.myReview.comment ?? '';
+    this.mySpoilers = this.myReview.containsSpoilers;
+    this.isEditingMyReview = true;
+  }
+
+  cancelEdit(): void {
+    this.isEditingMyReview = false;
+  }
+
+  deleteMyReview(): void {
+    if (!this.myReview || !this.movie) return;
+    if (!confirm('¿Borrar tu reseña? Esta acción no se puede deshacer.')) return;
+    this.deletingReviewId = this.myReview.id;
+    this.reviewSvc.delete(this.myReview.id).subscribe({
+      next: () => {
+        this.myReview = null;
+        this.isEditingMyReview = false;
+        this.loadReviews(this.movie!.id);
+        this.deletingReviewId = null;
+      },
+      error: () => { this.deletingReviewId = null; }
+    });
+  }
+
+  deleteReview(r: ReviewViewDTO): void {
+    if (!this.movie) return;
+    const isMine = this.isMyReview(r);
+    const msg = isMine
+      ? '¿Borrar tu reseña? Esta acción no se puede deshacer.'
+      : '¿Borrar esta reseña? (solo administradores). Esta acción no se puede deshacer.';
+    if (!confirm(msg)) return;
+    this.deletingReviewId = r.id;
+    this.reviewSvc.delete(r.id).subscribe({
+      next: () => {
+        if (isMine) this.myReview = null;
+        this.isEditingMyReview = false;
+        this.loadReviews(this.movie!.id);
+        this.deletingReviewId = null;
+      },
+      error: () => { this.deletingReviewId = null; }
+    });
+  }
+
+  canDeleteReview(r: ReviewViewDTO): boolean {
+    return this.auth.isLoggedIn() && (this.isMyReview(r) || this.auth.isAdmin());
   }
 
   /* ---------- UI helpers ---------- */
@@ -247,13 +309,10 @@ export class MovieDetailComponent implements OnInit {
     return this.showAllCast ? this.cast : this.cast.slice(0, 10);
   }
 
-  /** Listado de reseñas con la del usuario actual primera (si existe). */
-  get sortedReviews(): ReviewViewDTO[] {
-    if (!this.reviews.length || !this.myReview) return this.reviews;
-    const mine = this.reviews.find(r => r.id === this.myReview!.id);
-    if (!mine) return this.reviews;
-    const rest = this.reviews.filter(r => r.id !== this.myReview!.id);
-    return [mine, ...rest];
+  /** Reseñas de otros usuarios (la del usuario actual se muestra solo en el bloque "Tu reseña"). */
+  get otherReviews(): ReviewViewDTO[] {
+    if (!this.myReview) return this.reviews;
+    return this.reviews.filter(r => r.id !== this.myReview!.id);
   }
 
   isMyReview(r: ReviewViewDTO): boolean {

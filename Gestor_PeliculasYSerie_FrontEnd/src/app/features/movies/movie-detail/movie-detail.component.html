@@ -97,8 +97,8 @@
 
       <!-- Form / estado -->
       <ng-container *ngIf="auth.isLoggedIn(); else loginToReview">
-        <!-- ✅ si ya tengo review -->
-        <div *ngIf="myReview; else canCreate" class="review-form">
+        <!-- Tu reseña en modo lectura + Editar/Borrar (resaltada, no se repite en el listado) -->
+        <div *ngIf="myReview && !isEditingMyReview" class="review-form review-form--mine">
           <h3>Tu reseña</h3>
 
           <div class="my-review-line">
@@ -117,31 +117,48 @@
           <p class="review-comment" *ngIf="myReview.comment">{{ myReview.comment }}</p>
           <p class="review-comment" *ngIf="!myReview.comment"><em>Sin comentario.</em></p>
 
-          <!-- luego añadiremos editar/borrar -->
-        </div>
-
-        <!-- ✅ puedo crear -->
-        <ng-template #canCreate>
-          <div class="review-form">
-            <h3>Deja tu opinión</h3>
-
-            <label>Puntuación (1-10)</label>
-            <input type="number" min="1" max="10" [(ngModel)]="myRating" />
-
-            <label>Comentario</label>
-            <textarea rows="3" [(ngModel)]="myComment"></textarea>
-
-            <label class="spoilers">
-              <input type="checkbox" [(ngModel)]="mySpoilers" />
-              Contiene spoilers
-            </label>
-
-            <!-- ✅ arreglado: submitReview() sin argumentos -->
-            <button (click)="submitReview()" [disabled]="sendingReview">
-              {{ sendingReview ? 'Enviando…' : 'Publicar' }}
+          <div class="review-actions">
+            <button type="button" class="btn-edit" (click)="startEdit()">Editar</button>
+            <button type="button" class="btn-delete" (click)="deleteMyReview()" [disabled]="deletingReviewId === myReview?.id">
+              {{ deletingReviewId === myReview?.id ? 'Borrando…' : 'Borrar' }}
             </button>
           </div>
-        </ng-template>
+        </div>
+
+        <!-- Formulario: editar mi reseña (mismos campos que crear, mismo resaltado) -->
+        <div *ngIf="myReview && isEditingMyReview" class="review-form review-form--mine">
+          <h3>Editar tu reseña</h3>
+          <label>Puntuación (1-10)</label>
+          <input type="number" min="1" max="10" [(ngModel)]="myRating" />
+          <label>Comentario</label>
+          <textarea rows="3" [(ngModel)]="myComment"></textarea>
+          <label class="spoilers">
+            <input type="checkbox" [(ngModel)]="mySpoilers" />
+            Contiene spoilers
+          </label>
+          <div class="review-actions">
+            <button type="button" (click)="submitReview()" [disabled]="sendingReview">
+              {{ sendingReview ? 'Guardando…' : 'Guardar' }}
+            </button>
+            <button type="button" class="btn-cancel" (click)="cancelEdit()">Cancelar</button>
+          </div>
+        </div>
+
+        <!-- Formulario: crear nueva reseña -->
+        <div *ngIf="!myReview" class="review-form">
+          <h3>Deja tu opinión</h3>
+          <label>Puntuación (1-10)</label>
+          <input type="number" min="1" max="10" [(ngModel)]="myRating" />
+          <label>Comentario</label>
+          <textarea rows="3" [(ngModel)]="myComment"></textarea>
+          <label class="spoilers">
+            <input type="checkbox" [(ngModel)]="mySpoilers" />
+            Contiene spoilers
+          </label>
+          <button (click)="submitReview()" [disabled]="sendingReview">
+            {{ sendingReview ? 'Enviando…' : 'Publicar' }}
+          </button>
+        </div>
       </ng-container>
 
       <ng-template #loginToReview>
@@ -158,27 +175,30 @@
       </div>
 
       <div class="review-list" *ngIf="!loadingReviews && reviews.length">
-        <ng-container *ngFor="let r of sortedReviews; let i = index">
-          <article class="review-card" [class.review-card--mine]="isMyReview(r)">
-            <span class="review-card-badge" *ngIf="isMyReview(r)">Tu reseña</span>
-            <div class="review-head">
-              <div class="review-score">{{ r.rating }}/10</div>
-              <div class="review-meta">
-                <div class="review-author">{{ r.displayName }}</div>
-                <div class="review-date">{{ r.createdAt | date:'dd/MM/yyyy HH:mm' }}</div>
-                <span *ngIf="r.edited">Editada</span>
-                <span *ngIf="r.containsSpoilers">⚠ Spoilers</span>
-              </div>
+        <!-- Separador "Otras opiniones" solo si tienes reseña y hay más -->
+        <div class="review-list-separator" *ngIf="myReview && otherReviews.length">
+          
+          <p class="review-list-separator-label">Otras opiniones</p>
+        </div>
+        <!-- Solo reseñas de otros (la tuya está arriba en el bloque "Tu reseña") -->
+        <article *ngFor="let r of otherReviews" class="review-card">
+          <div class="review-head">
+            <div class="review-score">{{ r.rating }}/10</div>
+            <div class="review-meta">
+              <div class="review-author">{{ r.displayName }}</div>
+              <div class="review-date">{{ r.createdAt | date:'dd/MM/yyyy HH:mm' }}</div>
+              <span *ngIf="r.edited">Editada</span>
+              <span *ngIf="r.containsSpoilers">⚠ Spoilers</span>
             </div>
-            <p class="review-comment" *ngIf="r.comment">{{ r.comment }}</p>
-            <p class="review-comment" *ngIf="!r.comment"><em>Sin comentario.</em></p>
-          </article>
-          <!-- Separador entre tu reseña y el resto cuando la tuya va primera -->
-          <div class="review-list-separator" *ngIf="myReview && i === 0 && sortedReviews.length > 1">
-            <hr />
-            <p class="review-list-separator-label">Otras opiniones</p>
+            <button *ngIf="auth.isAdmin()" type="button" class="review-card-delete"
+                    (click)="deleteReview(r)" [disabled]="deletingReviewId === r.id"
+                    title="Borrar reseña (admin)">
+              {{ deletingReviewId === r.id ? '…' : 'Borrar' }}
+            </button>
           </div>
-        </ng-container>
+          <p class="review-comment" *ngIf="r.comment">{{ r.comment }}</p>
+          <p class="review-comment" *ngIf="!r.comment"><em>Sin comentario.</em></p>
+        </article>
       </div>
     </section>
   </div>
