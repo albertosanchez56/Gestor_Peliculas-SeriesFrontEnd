@@ -1,8 +1,16 @@
 <div class="table-container">
     <h2>Lista directores</h2>
     <button (click)="agregarDirector()" class="action-btn add-btn">Agregar</button>
-    <br>
-    <br>
+
+    <div class="filtros-bar">
+      <div class="filtros-search">
+        <label for="search-directores" class="sr-only">Buscar por nombre</label>
+        <input id="search-directores" type="search" class="filtros-input"
+               placeholder="Buscar por nombre…" [(ngModel)]="searchInput" />
+        <button type="button" class="filtros-btn" (click)="applySearch()">Buscar</button>
+      </div>
+    </div>
+
     <table class="custom-table">
       <thead>
         <tr>
@@ -12,7 +20,7 @@
         </tr>
       </thead>
       <tbody>
-        <tr *ngFor="let director of directores">
+        <tr *ngFor="let director of filteredDirectores">
           <td>{{director.id}}</td>
           <td>{{director.name}}</td>
           <td>

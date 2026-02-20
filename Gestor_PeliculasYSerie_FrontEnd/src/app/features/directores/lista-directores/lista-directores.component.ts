@@ -2,45 +2,51 @@ import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Director } from '../director';
 import { DirectorService } from '../service/director.service';
-import { Router, RouterModule, Routes } from '@angular/router';
+import { Router } from '@angular/router';
+import { FormsModule } from '@angular/forms';
 
 @Component({
   selector: 'app-lista-directores',
-  imports: [CommonModule],
+  imports: [CommonModule, FormsModule],
   templateUrl: './lista-directores.component.html',
   styleUrl: './lista-directores.component.css'
 })
 export class ListaDirectoresComponent {
 
-  directores:Director[];
+  directores: Director[] = [];
+  searchInput = '';
 
-  constructor(private directorServicio: DirectorService, private router:Router){}
+  constructor(private directorServicio: DirectorService, private router: Router) {}
 
-  ngOnInit(): void{
-    console.log('ListaDirectoresComponent cargado');
+  ngOnInit(): void {
     this.obtenerDirectores();
   }
 
-  agregarDirector(){
+  get filteredDirectores(): Director[] {
+    const q = this.searchInput.trim().toLowerCase();
+    if (!q) return this.directores;
+    return this.directores.filter(d => (d.name ?? '').toLowerCase().includes(q));
+  }
+
+  applySearch(): void {}
+
+  agregarDirector(): void {
     this.router.navigate(['registrar-director']);
   }
 
-  actualizarDirector(id:number){
-    this.router.navigate(['actualizar-director',id]);
+  actualizarDirector(id: number): void {
+    this.router.navigate(['actualizar-director', id]);
   }
 
-  eliminarDirector(id:number){
-    this.directorServicio.eliminarDirector(id).subscribe(dato => {
-      console.log(dato);
+  eliminarDirector(id: number): void {
+    this.directorServicio.eliminarDirector(id).subscribe(() => {
       this.obtenerDirectores();
-    })
+    });
   }
 
-  private obtenerDirectores(){
-    this.directorServicio.obtenerListaDeDirectores().subscribe(dato =>{
-      this.directores = dato;
-    })
+  private obtenerDirectores(): void {
+    this.directorServicio.obtenerListaDeDirectores().subscribe(dato => {
+      this.directores = dato ?? [];
+    });
   }
-
-  
 }

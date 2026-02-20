@@ -1,0 +1,53 @@
+.filtros-bar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px;
+  align-items: center;
+  margin: 16px 0 20px;
+}
+
+.filtros-search {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  min-width: 200px;
+}
+
+.filtros-input {
+  width: 260px;
+  padding: 8px 12px;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  font-size: 0.95rem;
+}
+
+.filtros-input:focus {
+  outline: none;
+  border-color: #1976d2;
+}
+
+.filtros-btn {
+  padding: 8px 16px;
+  background-color: #1976d2;
+  color: #fff;
+  border: none;
+  border-radius: 6px;
+  font-size: 0.95rem;
+  cursor: pointer;
+}
+
+.filtros-btn:hover {
+  background-color: #1565c0;
+}
+
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}

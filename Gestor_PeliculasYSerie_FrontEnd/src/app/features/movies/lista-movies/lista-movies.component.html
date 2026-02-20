@@ -1,13 +1,29 @@
 <div class="table-container">
   <h2>Lista Películas</h2>
   <button (click)="agregarPelicula()" class="action-btn add-btn">Agregar</button>
-  <br />
-  <br />
-  <button class="action-btn add-btn" [routerLink]="['/tmdb-import']">
-  Importar desde TMDB
-  </button>
-  <br />
-  <br />
+  <button class="action-btn add-btn" [routerLink]="['/tmdb-import']">Importar desde TMDB</button>
+
+  <div class="filtros-bar">
+    <div class="filtros-search">
+      <label for="search-input" class="sr-only">Buscar por título</label>
+      <input id="search-input"
+             type="search"
+             class="filtros-input"
+             placeholder="Buscar por título…"
+             [(ngModel)]="searchInput"
+             (ngModelChange)="onSearchInputChange()" />
+    </div>
+    <div class="filtros-genre">
+      <label for="genre-select">Género</label>
+      <select id="genre-select"
+              class="filtros-select"
+              [(ngModel)]="currentGenre"
+              (ngModelChange)="onGenreChange($event)">
+        <option value="">Todos los géneros</option>
+        <option *ngFor="let g of genreCards" [value]="g.slug">{{ g.name }}</option>
+      </select>
+    </div>
+  </div>
 
   <table class="custom-table">
     <thead>

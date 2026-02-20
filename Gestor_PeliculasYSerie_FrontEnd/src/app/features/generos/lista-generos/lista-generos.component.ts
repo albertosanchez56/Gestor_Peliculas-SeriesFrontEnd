@@ -3,42 +3,50 @@ import { GeneroService } from '../service/genero.service';
 import { Router } from '@angular/router';
 import { Generos } from '../generos';
 import { CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms';
 
 @Component({
   selector: 'app-lista-generos',
-  imports: [CommonModule],
+  imports: [CommonModule, FormsModule],
   templateUrl: './lista-generos.component.html',
   styleUrl: './lista-generos.component.css'
 })
 export class ListaGenerosComponent {
 
-  generos:Generos[];
-  
-    constructor(private generoServicio: GeneroService, private router:Router){}
-  
-    ngOnInit(): void{
-      console.log('ListaGenerosComponent cargado');
+  generos: Generos[] = [];
+  searchInput = '';
+
+  constructor(private generoServicio: GeneroService, private router: Router) {}
+
+  ngOnInit(): void {
+    this.obtenerGeneros();
+  }
+
+  get filteredGeneros(): Generos[] {
+    const q = this.searchInput.trim().toLowerCase();
+    if (!q) return this.generos;
+    return this.generos.filter(g => (g.name ?? '').toLowerCase().includes(q));
+  }
+
+  applySearch(): void {}
+
+  agregarGenero(): void {
+    this.router.navigate(['registrar-genero']);
+  }
+
+  actualizarGenero(id: number): void {
+    this.router.navigate(['actualizar-genero', id]);
+  }
+
+  eliminarGenero(id: number): void {
+    this.generoServicio.eliminarGenero(id).subscribe(() => {
       this.obtenerGeneros();
-    }
-  
-    agregarGenero(){
-      this.router.navigate(['registrar-genero']);
-    }
-  
-    actualizarGenero(id:number){
-      this.router.navigate(['actualizar-genero',id]);
-    }
-  
-    eliminarGenero(id:number){
-      this.generoServicio.eliminarGenero(id).subscribe(dato => {
-        console.log(dato);
-        this.obtenerGeneros();
-      })
-    }
-  
-    private obtenerGeneros(){
-      this.generoServicio.obtenerListaDeGeneros().subscribe(dato =>{
-        this.generos = dato;
-      })
-    }
+    });
+  }
+
+  private obtenerGeneros(): void {
+    this.generoServicio.obtenerListaDeGeneros().subscribe(dato => {
+      this.generos = dato ?? [];
+    });
+  }
 }

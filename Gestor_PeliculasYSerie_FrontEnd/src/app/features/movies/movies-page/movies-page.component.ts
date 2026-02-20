@@ -33,7 +33,7 @@ export class MoviesPageComponent {
     // 1) Tamaño por viewport
     this.applyPageSizeFromViewport(true);
 
-    // 2) Reaccionar a cambios de query params (?page, ?size, ?q)
+    // 2) Reaccionar a cambios de query params (?page, ?size, ?q, ?genre)
     this.route.queryParamMap.subscribe(q => {
       const qpPage = Number(q.get('page'));
       const qpSize = Number(q.get('size'));

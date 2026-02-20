@@ -1,18 +1,20 @@
 import { CommonModule } from '@angular/common';
 import { Component, OnInit } from '@angular/core';
 import { RouterModule } from '@angular/router';
+import { FormsModule } from '@angular/forms';
 import { UserDTO } from '../users';
 import { UsersService } from '../service/users.service';
 
 @Component({
   standalone: true,
   selector: 'app-lista-users',
-  imports: [CommonModule, RouterModule],
+  imports: [CommonModule, RouterModule, FormsModule],
   templateUrl: './lista-users.component.html',
   styleUrl: './lista-users.component.css'
 })
 export class ListaUsersComponent implements OnInit {
   users: UserDTO[] = [];
+  searchInput = '';
   loading = false;
   error = '';
   rowBusy: Record<number, boolean> = {};
@@ -21,6 +23,16 @@ export class ListaUsersComponent implements OnInit {
 
   ngOnInit(): void {
     this.load();
+  }
+
+  get filteredUsers(): UserDTO[] {
+    const q = this.searchInput.trim().toLowerCase();
+    if (!q) return this.users;
+    return this.users.filter(u =>
+      (u.username ?? '').toLowerCase().includes(q) ||
+      (u.email ?? '').toLowerCase().includes(q) ||
+      (u.displayName ?? '').toLowerCase().includes(q)
+    );
   }
 
   load(): void {

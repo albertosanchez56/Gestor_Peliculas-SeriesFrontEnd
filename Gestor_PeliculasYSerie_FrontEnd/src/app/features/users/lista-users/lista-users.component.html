@@ -1,6 +1,14 @@
 <div class="table-container">
   <h2>Lista Usuarios</h2>
 
+  <div class="filtros-bar">
+    <div class="filtros-search">
+      <label for="search-users" class="sr-only">Buscar por usuario, email o nombre</label>
+      <input id="search-users" type="search" class="filtros-input"
+             placeholder="Buscar por usuario, email o nombre…" [(ngModel)]="searchInput" />
+    </div>
+  </div>
+
   <div *ngIf="loading" class="info-row">Cargando...</div>
   <div *ngIf="error" class="alert-danger">{{ error }}</div>
 
@@ -18,7 +26,7 @@
     </thead>
 
     <tbody>
-      <tr *ngFor="let u of users">
+      <tr *ngFor="let u of filteredUsers">
         <td>{{ u.id }}</td>
         <td>{{ u.username }}</td>
         <td>{{ u.email }}</td>

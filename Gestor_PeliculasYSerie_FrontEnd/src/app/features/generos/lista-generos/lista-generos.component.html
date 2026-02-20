@@ -1,8 +1,16 @@
 <div class="table-container">
     <h2>Lista generos</h2>
     <button (click)="agregarGenero()" class="action-btn add-btn">Agregar</button>
-    <br>
-    <br>
+
+    <div class="filtros-bar">
+      <div class="filtros-search">
+        <label for="search-generos" class="sr-only">Buscar por nombre</label>
+        <input id="search-generos" type="search" class="filtros-input"
+               placeholder="Buscar por nombre…" [(ngModel)]="searchInput" />
+        <button type="button" class="filtros-btn" (click)="applySearch()">Buscar</button>
+      </div>
+    </div>
+
     <table class="custom-table">
       <thead>
         <tr>
@@ -12,7 +20,7 @@
         </tr>
       </thead>
       <tbody>
-        <tr *ngFor="let genero of generos">
+        <tr *ngFor="let genero of filteredGeneros">
           <td>{{genero.id}}</td>
           <td>{{genero.name}}</td>
           <td>
