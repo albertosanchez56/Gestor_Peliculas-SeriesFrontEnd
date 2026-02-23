@@ -16,24 +16,23 @@ import { MoviesPageComponent } from './features/movies/movies-page/movies-page.c
 import { LoginComponent } from './features/auth/login/login.component';
 import { adminGuard } from './core/admin.guard';
 import { RegisterComponent } from './features/auth/register/register.component';
-import { AccountComponent } from './features/auth/account/account.component';
 import { authGuard } from './core/auth.guard';
 
 
 export const routes: Routes = [
     { path: 'directores', component: ListaDirectoresComponent, canActivate: [adminGuard] },
     { path: '', redirectTo: 'Home', pathMatch: 'full' },
-    { path: 'registrar-director', component: RegistrarDirectorComponent },
-    { path: 'actualizar-director/:id', component: ActualizarDirectorComponent },
-    { path: 'empleado-detalles/:id', component: ActualizarDirectorComponent },
+    { path: 'registrar-director', component: RegistrarDirectorComponent, canActivate: [adminGuard] },
+    { path: 'actualizar-director/:id', component: ActualizarDirectorComponent, canActivate: [adminGuard] },
+    { path: 'empleado-detalles/:id', component: ActualizarDirectorComponent, canActivate: [adminGuard] },
     { path: 'generos', component: ListaGenerosComponent, canActivate: [adminGuard] },
-    { path: 'registrar-genero', component: RegistrarGenerosComponent },
-    { path: 'actualizar-genero/:id', component: ActualizarGenerosComponent },
-    { path: 'genero-detalles/:id', component: ActualizarGenerosComponent },
+    { path: 'registrar-genero', component: RegistrarGenerosComponent, canActivate: [adminGuard] },
+    { path: 'actualizar-genero/:id', component: ActualizarGenerosComponent, canActivate: [adminGuard] },
+    { path: 'genero-detalles/:id', component: ActualizarGenerosComponent, canActivate: [adminGuard] },
     { path: 'peliculas', component: ListaMoviesComponent, canActivate: [adminGuard] },
-    { path: 'registrar-pelicula', component: RegistrarMoviesComponent },
-    { path: 'actualizar-pelicula/:id', component: ActualizarMoviesComponent },
-    { path: 'pelicula-detalles/:id', component: ActualizarMoviesComponent },
+    { path: 'registrar-pelicula', component: RegistrarMoviesComponent, canActivate: [adminGuard] },
+    { path: 'actualizar-pelicula/:id', component: ActualizarMoviesComponent, canActivate: [adminGuard] },
+    { path: 'pelicula-detalles/:id', component: ActualizarMoviesComponent, canActivate: [adminGuard] },
     { path: 'tmdb-import', component: TmdbImportComponent, canActivate: [adminGuard] },
     { path: 'movies/:id', component: MovieDetailComponent },
     { path: 'movies', component: MoviesPageComponent },
@@ -49,13 +48,6 @@ export const routes: Routes = [
         loadComponent: () => import('./features/users/lista-users/lista-users.component')
             .then(m => m.ListaUsersComponent),
         canActivate: [adminGuard]
-    },
-    {
-        path: 'account',
-        loadComponent: () =>
-            import('./features/auth/account/account.component')
-                .then(m => m.AccountComponent),
-        canActivate: [authGuard]
     },
     {
         path: 'account/edit',
