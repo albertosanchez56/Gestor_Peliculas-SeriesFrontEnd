@@ -1,8 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
-
-const BASE_URL = 'http://localhost:9090/tmdb'; // tu gateway
+import { environment } from '../../../../environments/environment';
 
 export interface ImportSummary {
   requested: number;
@@ -30,19 +29,19 @@ export class TmdbService {
   /** Importa una sola página de populares (para flujo página a página con progreso). */
   importPopularPage(page: number): Observable<ImportPageResponse> {
     const params = new HttpParams().set('page', String(page));
-    return this.http.post<ImportPageResponse>(`${BASE_URL}/import/popular/page`, null, { params });
+    return this.http.post<ImportPageResponse>(`${environment.apiBaseUrl}/tmdb/import/popular/page`, null, { params });
   }
 
   importPopular(pages: number): Observable<ImportSummary> {
-    return this.http.post<ImportSummary>(`${BASE_URL}/import/popular?pages=${pages}`, {});
+    return this.http.post<ImportSummary>(`${environment.apiBaseUrl}/tmdb/import/popular?pages=${pages}`, {});
   }
 
   importById(tmdbId: number) {
-    return this.http.post(`${BASE_URL}/import/${tmdbId}`, {});
+    return this.http.post(`${environment.apiBaseUrl}/tmdb/import/${tmdbId}`, {});
   }
 
   importPopularSummary(pages: number): Observable<ImportSummary> {
   const params = new HttpParams().set('pages', String(pages));
-  return this.http.post<ImportSummary>(`${BASE_URL}/import/popular/summary`, null, { params });
+  return this.http.post<ImportSummary>(`${environment.apiBaseUrl}/tmdb/import/popular/summary`, null, { params });
   }
 }

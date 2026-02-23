@@ -1,6 +1,7 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
+import { environment } from '../../../../environments/environment';
 import { Generos } from '../generos';
 
 export interface GenreCard {
@@ -16,7 +17,7 @@ export interface GenreCard {
 })
 export class GeneroService {
 
-  private baseUrl = "http://localhost:9090/generos";
+  private baseUrl = `${environment.apiBaseUrl}/generos`;
   
     constructor(private httpClient : HttpClient) { }
 

@@ -175,12 +175,12 @@ npm run serve:ssr:Gestor_PeliculasYSerie_FrontEnd
 
 ## Configuración
 
-La URL base del API está definida en cada servicio:
-- `AuthService`: `http://localhost:9090/usuario/auth`
-- `MovieService`: `http://localhost:9090/peliculas`
-- `ReviewService`: `http://localhost:9090/reviews`
+La URL base del API se configura por entorno:
 
-Para distintos entornos, se recomienda crear `environment.ts` y `environment.prod.ts` con la URL base configurable.
+- **Desarrollo:** `src/environments/environment.ts` → `apiBaseUrl: 'http://localhost:9090'`
+- **Producción:** `src/environments/environment.prod.ts` → ajusta `apiBaseUrl` a la URL de tu API (ej. `https://api.tudominio.com`)
+
+Al ejecutar `ng build --configuration=production`, se usa automáticamente `environment.prod.ts` (sustitución configurada en `angular.json`). Todos los servicios (Auth, Movie, Review, Genero, Director, Users, Tmdb) usan `environment.apiBaseUrl`.
 
 ---
 
@@ -229,7 +229,6 @@ Ejecuta los tests con Karma/Jasmine. Algunos componentes incluyen `*.spec.ts` ge
 
 ## Próximos pasos
 
-- Crear **environment.ts** para configurar la URL base del API por entorno
 - Eliminar rutas duplicadas en `app.routes.ts` (p. ej. `account`)
 - Proteger con `adminGuard` rutas de registro/edición de directores, géneros y películas
 - Implementar funcionalidad del botón **favoritos** (actualmente solo `console.log`)

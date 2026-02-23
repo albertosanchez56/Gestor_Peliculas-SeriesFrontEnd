@@ -1,6 +1,7 @@
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
+import { environment } from '../../../environments/environment';
 
 export interface ReviewDTO {
   id: number;
@@ -52,7 +53,7 @@ export interface UpdateReviewRequest {
 
 @Injectable({ providedIn: 'root' })
 export class ReviewService {
-  private baseUrl = 'http://localhost:9090/reviews';
+  private baseUrl = `${environment.apiBaseUrl}/reviews`;
 
   constructor(private http: HttpClient) {}
 

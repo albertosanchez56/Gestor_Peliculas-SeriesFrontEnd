@@ -2,10 +2,11 @@ import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { UserDTO } from '../users';
 import { Observable } from 'rxjs';
+import { environment } from '../../../../environments/environment';
 
 @Injectable({ providedIn: 'root' })
 export class UsersService {
-  private readonly baseUrl = 'http://localhost:9090/usuario/admin/users';
+  private readonly baseUrl = `${environment.apiBaseUrl}/usuario/admin/users`;
 
   constructor(private http: HttpClient) { }
 

@@ -1,6 +1,7 @@
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
+import { environment } from '../../../../environments/environment';
 import { Movies } from '../movies';
 import { MovieRequest } from '../MovieRequest';
 
@@ -33,7 +34,7 @@ export interface PopularActor {
 })
 export class MovieService {
 
-  private baseUrl = "http://localhost:9090/peliculas";
+  private baseUrl = `${environment.apiBaseUrl}/peliculas`;
 
   constructor(private httpClient: HttpClient) { }
 

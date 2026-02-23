@@ -1,6 +1,7 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
+import { environment } from '../../../../environments/environment';
 import { Director } from '../director';
 
 @Injectable({
@@ -8,7 +9,7 @@ import { Director } from '../director';
 })
 export class DirectorService {
 
-  private baseUrl = "http://localhost:9090/directores";
+  private baseUrl = `${environment.apiBaseUrl}/directores`;
 
   constructor(private httpClient : HttpClient) { }
 
