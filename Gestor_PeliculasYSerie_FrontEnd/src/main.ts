@@ -6,12 +6,12 @@ import { provideRouter } from '@angular/router';
 import { routes } from './app/app.routes';
 import { FormsModule } from '@angular/forms';
 import { authInterceptor } from './app/core/auth.interceptor';
+import { errorInterceptor } from './app/core/error.interceptor';
 
 bootstrapApplication(AppComponent, {
   providers: [
     provideHttpClient(
-      // 👇 NO withFetch()
-      withInterceptors([authInterceptor])
+      withInterceptors([authInterceptor, errorInterceptor])
     ),
     provideRouter(routes),
   ]
