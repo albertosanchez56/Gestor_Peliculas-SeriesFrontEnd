@@ -231,7 +231,7 @@ Ejecuta los tests con Karma/Jasmine. Algunos componentes incluyen `*.spec.ts` ge
 
 - Eliminar rutas duplicadas en `app.routes.ts` (p. ej. `account`)
 - Proteger con `adminGuard` rutas de registro/edición de directores, géneros y películas
-- Implementar funcionalidad del botón **favoritos** (actualmente solo `console.log`)
+- Implementar funcionalidad del botón **favoritos** cuando el backend exponga el *favoritelist-service* (actualmente en desarrollo; ver README del backend).
 - Añadir **manejo global de errores HTTP** (interceptor de errores)
 - Migrar scripts jQuery/carousel a componentes Angular nativos si se requiere
 
