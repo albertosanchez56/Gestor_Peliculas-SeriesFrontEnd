@@ -12,6 +12,43 @@ ng serve
 
 Once the server is running, open your browser and navigate to `http://localhost:4200/`. The application will automatically reload whenever you modify any of the source files.
 
+## Ejecutar contra el backend Docker (FilmScore)
+
+Este frontend está pensado para consumir el backend de microservicios `FilmScore` desplegado con Docker Compose.
+
+1. **Levantar el backend con Docker**
+   - Clona el repositorio del backend `Gestor_PeliculasYSeries_Microservicios`.
+   - Sigue las instrucciones de su `README.md` para:
+     - Crear el fichero `.env` a partir de `.env.docker.example`.
+     - Ejecutar:
+       ```bash
+       docker compose up -d --build
+       ```
+     - Al final tendrás el Gateway disponible en `http://localhost:9090` y MySQL con datos de ejemplo precargados.
+
+2. **Verificar la URL del API en el frontend**
+   - En este proyecto, el cliente Angular usa los ficheros de entorno de Angular:
+     - `src/environments/environment.ts` (desarrollo)
+     - `src/environments/environment.prod.ts` (producción)
+   - Asegúrate de que la propiedad `apiBaseUrl` apunta al Gateway:
+     ```ts
+     export const environment = {
+       production: false,
+       apiBaseUrl: 'http://localhost:9090'
+     };
+     ```
+
+3. **Arrancar el frontend apuntando al backend Docker**
+   - Instala dependencias si aún no lo has hecho:
+     ```bash
+     npm install
+     ```
+   - Arranca el servidor de desarrollo:
+     ```bash
+     ng serve
+     ```
+   - Abre `http://localhost:4200` en el navegador. Todas las llamadas HTTP del frontend irán contra `http://localhost:9090/...`, que es el Gateway de los microservicios en Docker.
+
 ## Code scaffolding
 
 Angular CLI includes powerful code scaffolding tools. To generate a new component, run:
