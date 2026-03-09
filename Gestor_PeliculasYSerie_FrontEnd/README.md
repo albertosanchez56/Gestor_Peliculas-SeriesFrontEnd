@@ -73,6 +73,8 @@ ng build
 
 This will compile your project and store the build artifacts in the `dist/` directory. By default, the production build optimizes your application for performance and speed.
 
+**URL del API en producción:** En un build de producción (`ng build` o `ng build --configuration=production`), Angular sustituye `environment.ts` por `environment.prod.ts` (configurado en `angular.json` con `fileReplacements`). La propiedad `apiBaseUrl` del build final sale de `src/environments/environment.prod.ts`. En CI/CD o al desplegar, asegúrate de que ese fichero tenga la URL correcta de tu API (Gateway), o configura un reemplazo en el pipeline de build si no quieres versionar la URL en el repo.
+
 ## Running unit tests
 
 To execute unit tests with the [Karma](https://karma-runner.github.io) test runner, use the following command:
