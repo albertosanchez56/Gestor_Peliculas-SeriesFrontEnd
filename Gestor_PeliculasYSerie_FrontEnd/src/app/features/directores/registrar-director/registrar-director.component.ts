@@ -23,12 +23,9 @@ export class RegistrarDirectorComponent {
 
   guardarDirector() {
     this.directorServicio.registrarDirector(this.director).subscribe(
-      (dato) => {
-        console.log(dato);  // Verifica la respuesta
-        this.irALaListaDeDirectores();
-      },
-      (error) => {
-        console.log(error);  // Revisa el error si ocurre
+      () => this.irALaListaDeDirectores(),
+      () => {
+        // Aquí podrías mostrar un mensaje de error con un servicio de notificaciones si lo necesitas
       }
     );
   }
@@ -38,7 +35,6 @@ export class RegistrarDirectorComponent {
   }
 
   onSubmit(){
-    console.log(this.director);
     this.guardarDirector();
   }
 }

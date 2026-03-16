@@ -324,6 +324,6 @@ export class MovieDetailComponent implements OnInit {
   }
 
   onToggleFavorite(): void {
-    console.log('Fav clicked');
+    // Aquí en el futuro podrías llamar a un servicio de favoritos cuando esté implementado
   }
 }

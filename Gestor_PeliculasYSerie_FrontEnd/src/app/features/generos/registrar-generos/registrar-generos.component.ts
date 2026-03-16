@@ -22,12 +22,9 @@ export class RegistrarGenerosComponent {
   
     guardarGenero() {
       this.generoService.registrarGenero(this.genero).subscribe(
-        (dato) => {
-          console.log(dato);  // Verifica la respuesta
-          this.irALaListaDeGeneros();
-        },
-        (error) => {
-          console.log(error);  // Revisa el error si ocurre
+        () => this.irALaListaDeGeneros(),
+        () => {
+          // Aquí podrías mostrar un mensaje de error con un servicio de notificaciones si lo necesitas
         }
       );
     }
@@ -37,7 +34,6 @@ export class RegistrarGenerosComponent {
     }
   
     onSubmit(){
-      console.log(this.genero);
       this.guardarGenero();
     }
 }
