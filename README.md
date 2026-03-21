@@ -189,10 +189,11 @@ Al ejecutar `ng build --configuration=production`, se usa automáticamente `envi
 ```
 src/
 ├── app/
-│   ├── core/                    # Auth, guards, interceptor
+│   ├── core/                    # Auth, guards, interceptors
 │   │   ├── auth.service.ts
 │   │   ├── auth.models.ts
 │   │   ├── auth.interceptor.ts
+│   │   ├── error.interceptor.ts
 │   │   ├── auth.guard.ts
 │   │   └── admin.guard.ts
 │   ├── features/
@@ -220,10 +221,23 @@ src/
 ## Testing
 
 ```bash
-ng test
+# Modo interactivo (abre el navegador)
+npm test
+# o: ng test
+
+# Una sola pasada, sin ventana (ideal para CI o terminal)
+npm run test:ci
+# equivalente: ng test --no-watch --browsers=ChromeHeadless
 ```
 
-Ejecuta los tests con Karma/Jasmine. Algunos componentes incluyen `*.spec.ts` generados por Angular CLI.
+Tests con **Karma + Jasmine**. Cobertura relevante para portfolio:
+
+- **Guards:** `auth.guard.spec.ts`, `admin.guard.spec.ts` (acceso y redirecciones).
+- **Interceptor HTTP de errores:** `error.interceptor.spec.ts` (401, 403, 5xx, SSR sin UI).
+- **Login:** `login.component.spec.ts` (formulario, éxito, errores).
+- Otros `*.spec.ts` en servicios y componentes de listado/CRUD.
+
+Requiere **Chrome** instalado (Karma usa ChromeHeadless en `test:ci`).
 
 ---
 
