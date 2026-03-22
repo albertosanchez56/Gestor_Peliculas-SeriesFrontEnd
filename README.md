@@ -213,6 +213,12 @@ src/
 ├── index.html
 ├── main.ts
 ├── main.server.ts
+├── e2e/                         # Playwright (E2E)
+│   ├── smoke.spec.ts
+│   ├── navigation.spec.ts
+│   ├── api-journey.spec.ts
+│   └── …
+├── playwright.config.ts
 └── styles.css
 ```
 
@@ -239,14 +245,43 @@ Tests con **Karma + Jasmine**. Cobertura relevante para portfolio:
 
 Requiere **Chrome** instalado (Karma usa ChromeHeadless en `test:ci`).
 
+### Tests E2E (Playwright)
+
+En la carpeta del proyecto Angular (`Gestor_PeliculasYSerie_FrontEnd/Gestor_PeliculasYSerie_FrontEnd`):
+
+```bash
+# Primera vez: instalar navegador para Playwright
+npx playwright install chromium
+
+# Ejecuta todos los e2e (levanta `ng serve` solo si no hay servidor en :4200)
+npm run e2e
+
+# Modo UI / con ventana
+npm run e2e:ui
+npm run e2e:headed
+```
+
+| Suite | Qué comprueba |
+|--------|----------------|
+| `e2e/smoke.spec.ts` | Home, login, registro, listado Películas — **no requiere backend**. |
+| `e2e/navigation.spec.ts` | Menú Inicio/Películas y búsqueda con query. |
+| `e2e/api-journey.spec.ts` | Clic en película (grid, carrusel, listado), paginación — **solo si el Gateway responde** (`GET /peliculas/top-rated`). |
+| `e2e/search-suggestions.spec.ts` | Autocomplete de búsqueda — **requiere API**. |
+| `e2e/auth-login.spec.ts` | Login real — **solo si** defines `E2E_USER` y `E2E_PASSWORD` (usuario válido en tu entorno). |
+
+Variables opcionales:
+
+- `E2E_API_BASE_URL` — por defecto `http://localhost:9090` (debe coincidir con `environment.ts`).
+- `E2E_BASE_URL` — URL del front para los tests (por defecto `http://127.0.0.1:4200`).
+- `E2E_USER` / `E2E_PASSWORD` — credenciales para el test de login opcional.
+
+Sin backend, las pruebas que dependen de la API se **omit** (no fallan). En CI (`CI=true`) Playwright arranca solo el front; conviene tener el backend en otro job o ejecutar e2e en local con Gateway + datos.
+
 ---
 
 ## Próximos pasos
 
-- Eliminar rutas duplicadas en `app.routes.ts` (p. ej. `account`)
-- Proteger con `adminGuard` rutas de registro/edición de directores, géneros y películas
 - Implementar funcionalidad del botón **favoritos** cuando el backend exponga el *favoritelist-service* (actualmente en desarrollo; ver README del backend).
-- Añadir **manejo global de errores HTTP** (interceptor de errores)
 - Migrar scripts jQuery/carousel a componentes Angular nativos si se requiere
 
 ---
