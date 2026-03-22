@@ -294,4 +294,8 @@ Sin backend, las pruebas que dependen de la API se **omit** (no fallan). En CI (
 
 ## Licencia
 
-Proyecto de uso personal y educativo.
+Este repositorio (frontend FilmScore) se publica bajo la **licencia MIT**. El texto completo está en [`LICENSE`](./LICENSE) en la raíz de **este** repositorio.
+
+> El backend vive en otro repositorio; allí tiene su propio archivo `LICENSE` en la raíz.
+
+Uso personal, educativo y según los términos de la licencia.
